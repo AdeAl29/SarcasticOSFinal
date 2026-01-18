@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sarcastic OS Mobile</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --accent: #6366f1;
+            --glass: rgba(24, 24, 27, 0.65);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Themes */
+        body.theme-toxic { --accent: #22c55e; }
+        body.theme-blood { --accent: #ef4444; }
+        body.theme-gold { --accent: #eab308; }
+        body.theme-cyber { --accent: #06b6d4; }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Space Grotesk', sans-serif;
+            color: #f4f4f5;
+            overflow: hidden; /* Prevent body scroll, use container */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0; left: 0; w: 100vw; h: 100vh;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(var(--accent-rgb), 0.08), transparent 25%), 
+                radial-gradient(circle at 85% 30%, rgba(255,255,255,0.03), transparent 25%);
+            z-index: -1;
+        }
+
+        /* Mobile Optimization */
+        .safe-area-bottom { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        
+        /* Components */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .nav-item.active { color: var(--accent); }
+        .nav-item.active .indicator { transform: scale(1); opacity: 1; }
+        
+        .task-slide-enter { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Smooth Interactions */
+        button:active { transform: scale(0.96); }
+    </style>
+</head>
+<body class="h-screen flex flex-col">
+
+    <div class="bg-pattern"></div>
+
+    <header class="glass-card z-50 flex items-center justify-between px-5 py-4 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 overflow-hidden">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="User" class="w-full h-full">
+                </div>
+                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-black animate-pulse"></div>
+            </div>
+            <div>
+                <h1 class="text-sm font-bold leading-none">Sarcastic OS</h1>
+                <p class="text-[10px] text-slate-400 font-mono mt-0.5 uppercase tracking-wide" id="user-rank">Loading...</p>
+            </div>
+        </div>
+        <div class="flex flex-col items-end">
+            <span class="text-xs font-bold text-[var(--accent)]" id="header-xp">0 XP</span>
+            <div class="w-16 h-1 bg-slate-800 rounded-full mt-1">
+                <div id="header-progress" class="h-full bg-[var(--accent)] rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-container" class="flex-1 overflow-y-auto hide-scroll relative safe-area-bottom">
+        
+        <div id="view-home" class="view-section px-5 pt-6 space-y-6">
+            
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-slate-800 to-black border border-slate-700 shadow-lg relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-slate-700/20"><i data-lucide="quote" class="w-24 h-24"></i></div>
+                <p id="daily-quote" class="relative z-10 text-sm italic text-slate-300 font-medium">"Memuat penghinaan..."</p>
+                <div class="mt-3 flex items-center gap-2 text-[10px] text-slate-500 font-mono uppercase">
+                    <span id="date-display">...</span> • <span class="text-red-400">Streak: <span id="streak-display">0</span> Hari</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="glass-card p-3 rounded-xl flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="list-todo" class="w-5 h-5"></i></div>
+                    <div>
+                        <div class="text-[10px] text-slate-500 uppercase">Tugas</div>
+                        <div class="text-lg font-bold" id="stat-tasks">0</div>
+                    </div>
+                </div>
+                <div class="glass-card p-3 rounded-xl flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-purple-500/10 text-purple-400"><i data-lucide="brain-circuit" class="w-5 h-5"></i></div>
+                    <div>
+                        <div class="text-[10px] text-slate-500 uppercase">Wacana</div>
+                        <div class="text-lg font-bold" id="stat-wacana">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl space-y-3 sticky top-0 z-40 backdrop-blur-xl shadow-2xl">
+                <input type="text" id="task-input" placeholder="Tulis rencana gagalmu..." 
+                    class="w-full bg-black/30 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:border-[var(--accent)] outline-none transition placeholder-slate-600">
+                
+                <div class="flex gap-2">
+                    <select id="task-cat" class="bg-black/30 border border-slate-700 rounded-xl px-3 text-xs text-slate-300 outline-none">
+                        <option value="life">Hidup</option>
+                        <option value="work">Kerja</option>
+                        <option value="urgent">Kepepet</option>
+                    </select>
+                    <button onclick="App.addTask()" class="flex-1 bg-[var(--accent)] hover:opacity-90 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-500/20 active:scale-95 transition flex items-center justify-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah Beban
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex gap-2 overflow-x-auto pb-1 hide-scroll">
+                <button onclick="App.filter('all')" class="filter-btn active px-4 py-1.5 rounded-full text-xs font-medium border border-slate-700 bg-slate-800 text-slate-300 whitespace-nowrap">Semua</button>
+                <button onclick="App.filter('active')" class="filter-btn px-4 py-1.5 rounded-full text-xs font-medium border border-slate-700 bg-transparent text-slate-500 whitespace-nowrap">Belum (Wajar)</button>
+                <button onclick="App.filter('completed')" class="filter-btn px-4 py-1.5 rounded-full text-xs font-medium border border-slate-700 bg-transparent text-slate-500 whitespace-nowrap">Selesai (Hoki)</button>
+            </div>
+
+            <div id="task-list" class="space-y-3 pb-10">
+                </div>
+        </div>
+
+        <div id="view-shop" class="view-section hidden px-5 pt-6 space-y-6">
+            <h2 class="text-2xl font-bold">Black Market</h2>
+            <div class="glass-card p-4 rounded-2xl bg-gradient-to-r from-yellow-900/20 to-transparent border-yellow-500/20">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-yellow-500 uppercase tracking-widest">Saldo XP</span>
+                    <span class="text-2xl font-mono font-bold text-yellow-400" id="shop-balance">0</span>
+                </div>
+            </div>
+            <div id="shop-grid" class="grid grid-cols-1 gap-4"></div>
+        </div>
+
+        <div id="view-focus" class="view-section hidden px-5 pt-6 space-y-6 h-full flex flex-col justify-center">
+            <div class="glass-card p-8 rounded-3xl text-center relative overflow-hidden border-indigo-500/30">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-50"></div>
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-8">Mode Anti-Sambat</h3>
+                
+                <div class="relative w-64 h-64 mx-auto mb-8 flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90">
+                        <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="transparent" class="text-slate-800" />
+                        <circle id="timer-ring" cx="128" cy="128" r="120" stroke="currentColor" stroke-width="8" fill="transparent" class="text-[var(--accent)] transition-all duration-1000" stroke-dasharray="754" stroke-dashoffset="0" />
+                    </svg>
+                    <div id="timer-display" class="absolute text-5xl font-mono font-bold text-white tracking-tighter">25:00</div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button onclick="Pomodoro.toggle()" id="timer-btn" class="flex-1 bg-white text-black py-4 rounded-2xl font-bold shadow-xl active:scale-95 transition">Mulai Fokus</button>
+                    <button onclick="Pomodoro.reset()" class="w-16 bg-slate-800 rounded-2xl flex items-center justify-center text-slate-300 active:scale-95 transition"><i data-lucide="rotate-ccw"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-profile" class="view-section hidden px-5 pt-6 space-y-6">
+            <h2 class="text-2xl font-bold">Data Aib</h2>
+            
+            <div class="glass-card p-6 rounded-2xl">
+                <canvas id="statsChart"></canvas>
+            </div>
+
+            <div class="space-y-3">
+                <div class="text-xs font-bold text-slate-500 uppercase px-1">Settings</div>
+                <button onclick="App.toggleSound()" class="w-full glass-card p-4 rounded-xl flex items-center justify-between active:bg-slate-800 transition">
+                    <span class="flex items-center gap-3 text-sm"><i data-lucide="volume-2" class="w-4 h-4 text-[var(--accent)]"></i> Sound FX</span>
+                    <span id="sound-status" class="text-xs text-green-400 font-mono">ON</span>
+                </button>
+                <button onclick="DataMgr.backup()" class="w-full glass-card p-4 rounded-xl flex items-center justify-between active:bg-slate-800 transition">
+                    <span class="flex items-center gap-3 text-sm"><i data-lucide="download" class="w-4 h-4 text-blue-400"></i> Backup Data</span>
+                </button>
+                <button onclick="DataMgr.reset()" class="w-full glass-card p-4 rounded-xl flex items-center justify-between border-red-900/50 active:bg-red-900/20 transition">
+                    <span class="flex items-center gap-3 text-sm text-red-400"><i data-lucide="trash" class="w-4 h-4"></i> Reset Pabrik</span>
+                </button>
+            </div>
+            
+            <div class="h-20"></div> </div>
+
+    </main>
+
+    <nav class="glass-card fixed bottom-0 w-full z-50 pb-[env(safe-area-inset-bottom)]">
+        <div class="flex justify-around items-center h-16 px-2">
+            <button onclick="App.nav('home')" class="nav-item active flex flex-col items-center justify-center w-full h-full text-slate-500 transition-colors">
+                <i data-lucide="home" class="w-6 h-6 mb-1"></i>
+                <span class="text-[9px] font-bold">Home</span>
+                <div class="indicator w-1 h-1 rounded-full bg-[var(--accent)] mt-1 opacity-0 transition-all"></div>
+            </button>
+            <button onclick="App.nav('focus')" class="nav-item flex flex-col items-center justify-center w-full h-full text-slate-500 transition-colors">
+                <i data-lucide="timer" class="w-6 h-6 mb-1"></i>
+                <span class="text-[9px] font-bold">Fokus</span>
+                <div class="indicator w-1 h-1 rounded-full bg-[var(--accent)] mt-1 opacity-0 transition-all"></div>
+            </button>
+            <button onclick="App.nav('shop')" class="nav-item flex flex-col items-center justify-center w-full h-full text-slate-500 transition-colors">
+                <i data-lucide="shopping-bag" class="w-6 h-6 mb-1"></i>
+                <span class="text-[9px] font-bold">Shop</span>
+                <div class="indicator w-1 h-1 rounded-full bg-[var(--accent)] mt-1 opacity-0 transition-all"></div>
+            </button>
+            <button onclick="App.nav('profile')" class="nav-item flex flex-col items-center justify-center w-full h-full text-slate-500 transition-colors">
+                <i data-lucide="user" class="w-6 h-6 mb-1"></i>
+                <span class="text-[9px] font-bold">Profil</span>
+                <div class="indicator w-1 h-1 rounded-full bg-[var(--accent)] mt-1 opacity-0 transition-all"></div>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        /**
+         * SARCASTIC OS MOBILE ENGINE
+         * Compact, Fast, Touch-Optimized
+         */
+
+        // --- UTILS ---
+        const Utils = {
+            id: () => '_' + Math.random().toString(36).substr(2, 9),
+            vibrate: (ms = 10) => { if (navigator.vibrate) navigator.vibrate(ms); },
+            date: () => new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short' }),
+            random: (arr) => arr[Math.floor(Math.random() * arr.length)]
+        };
+
+        // --- DATABASE ---
+        class LocalDB {
+            constructor() {
+                this.key = 'SarcasticMobile_v2';
+                this.data = this.load() || this.seed();
+                this.checkStreak();
+            }
+            seed() {
+                return {
+                    user: { xp: 0, level: 1, theme: 'default', sound: true },
+                    tasks: [],
+                    inventory: [],
+                    stats: { completed: 0, deleted: 0, created: 0 },
+                    lastLogin: new Date().toDateString(),
+                    streak: 1
+                };
+            }
+            load() { return JSON.parse(localStorage.getItem(this.key)); }
+            save() { localStorage.setItem(this.key, JSON.stringify(this.data)); }
+            
+            checkStreak() {
+                const today = new Date().toDateString();
+                if (this.data.lastLogin !== today) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    if (this.data.lastLogin === yesterday.toDateString()) {
+                        this.data.streak++;
+                    } else {
+                        this.data.streak = 1; // Reset streak if missed a day
+                    }
+                    this.data.lastLogin = today;
+                    this.save();
+                }
+            }
+        }
+
+        // --- CONSTANTS ---
+        const DATA = {
+            quotes: [
+                "Rebahan adalah investasi energi.", "Jangan tunda sampai besok jika bisa dibatalkan.", 
+                "Kerja keras itu kuno, kerja cerdas itu nyuruh orang.", "Deadline cuma sugesti.",
+                "Kamu tidak malas, cuma sedang dalam mode hemat daya."
+            ],
+            ranks: ["Noob", "Pemula", "Medioker", "Pro Beban", "Suhu Gabut", "Dewa Wacana"],
+            items: [
+                { id: 'theme-toxic', name: 'Toxic Green', cost: 500, icon: 'zap' },
+                { id: 'theme-blood', name: 'Panic Red', cost: 800, icon: 'flame' },
+                { id: 'theme-cyber', name: 'Cyber Blue', cost: 1200, icon: 'cpu' },
+                { id: 'theme-gold', name: 'Sultan Gold', cost: 5000, icon: 'crown' }
+            ]
+        };
+
+        // --- APP CONTROLLER ---
+        const App = {
+            db: new LocalDB(),
+            filterMode: 'all',
+
+            init() {
+                this.render();
+                this.updateStats();
+                lucide.createIcons();
+                this.setupTheme();
+                
+                // Onboarding Check
+                if(this.db.data.user.xp === 0 && this.db.data.tasks.length === 0) {
+                    Swal.fire({
+                        title: 'Selamat Datang!',
+                        text: 'Aplikasi ini didesain untuk menghina produktivitasmu. Siap?',
+                        icon: 'info',
+                        confirmButtonText: 'Siap (Bohong)',
+                        background: '#18181b', color: '#fff'
+                    });
+                }
+            },
+
+            addTask() {
+                Utils.vibrate(20);
+                const input = document.getElementById('task-input');
+                const cat = document.getElementById('task-cat').value;
+                const text = input.value.trim();
+
+                if (!text) return Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'Ketik dulu woy!', showConfirmButton: false, timer: 1500, background: '#18181b', color: '#fff' });
+
+                this.db.data.tasks.unshift({
+                    id: Utils.id(),
+                    text, cat,
+                    done: false,
+                    date: new Date()
+                });
+                this.db.data.stats.created++;
+                this.db.save();
+                
+                input.value = '';
+                this.renderTasks();
+                this.updateStats();
+            },
+
+            toggleTask(id) {
+                Utils.vibrate(10);
+                const task = this.db.data.tasks.find(t => t.id === id);
+                if(task) {
+                    task.done = !task.done;
+                    if(task.done) {
+                        this.addXP(50);
+                        this.db.data.stats.completed++;
+                        confetti({ origin: { y: 0.8 }, particleCount: 60, spread: 50 });
+                    } else {
+                        this.addXP(-20);
+                    }
+                    this.db.save();
+                    this.renderTasks();
+                    this.updateStats();
+                }
+            },
+
+            deleteTask(id) {
+                Utils.vibrate(30);
+                Swal.fire({
+                    title: 'Nyerah?',
+                    text: "Menghapus tugas = pengecut (XP -10)",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    background: '#18181b', color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.db.data.tasks = this.db.data.tasks.filter(t => t.id !== id);
+                        this.db.data.stats.deleted++;
+                        this.addXP(-10);
+                        this.db.save();
+                        this.renderTasks();
+                        this.updateStats();
+                    }
+                });
+            },
+
+            addXP(amount) {
+                let user = this.db.data.user;
+                user.xp = Math.max(0, user.xp + amount);
+                const oldLvl = user.level;
+                user.level = Math.floor(user.xp / 500) + 1;
+                
+                if(user.level > oldLvl) {
+                    Swal.fire({ title: 'LEVEL UP!', text: `Sekarang Level ${user.level}. Tetap beban.`, icon: 'success', background: '#18181b', color: '#fff' });
+                }
+                this.updateStats();
+            },
+
+            buy(itemId, cost) {
+                Utils.vibrate();
+                const user = this.db.data.user;
+                if(this.db.data.inventory.includes(itemId)) return; // Already owned
+
+                if(user.xp >= cost) {
+                    user.xp -= cost;
+                    this.db.data.inventory.push(itemId);
+                    user.theme = itemId;
+                    this.db.save();
+                    this.setupTheme();
+                    this.renderShop();
+                    this.updateStats();
+                    Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Terbeli!', timer: 2000, background: '#18181b', color: '#fff' });
+                } else {
+                    Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'XP Miskin!', timer: 2000, background: '#18181b', color: '#fff' });
+                }
+            },
+
+            nav(view) {
+                Utils.vibrate(15);
+                // Hide all views
+                document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+                document.getElementById(`view-${view}`).classList.remove('hidden');
+                
+                // Update nav styling
+                document.querySelectorAll('.nav-item').forEach(el => {
+                    el.classList.remove('active');
+                    el.classList.add('text-slate-500');
+                });
+                const activeBtn = document.querySelector(`button[onclick="App.nav('${view}')"]`);
+                activeBtn.classList.add('active');
+                activeBtn.classList.remove('text-slate-500');
+
+                // Trigger specific renders
+                if(view === 'shop') this.renderShop();
+                if(view === 'profile') this.renderChart();
+            },
+
+            filter(mode) {
+                Utils.vibrate();
+                this.filterMode = mode;
+                
+                // Update Chips
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.className = "filter-btn px-4 py-1.5 rounded-full text-xs font-medium border border-slate-700 bg-transparent text-slate-500 whitespace-nowrap transition";
+                });
+                event.target.className = "filter-btn active px-4 py-1.5 rounded-full text-xs font-medium border border-slate-700 bg-slate-800 text-slate-300 whitespace-nowrap transition";
+                
+                this.renderTasks();
+            },
+
+            // --- RENDERERS ---
+            render() {
+                this.renderTasks();
+                document.getElementById('date-display').innerText = Utils.date();
+                document.getElementById('daily-quote').innerText = `"${Utils.random(DATA.quotes)}"`;
+                document.getElementById('streak-display').innerText = this.db.data.streak;
+            },
+
+            renderTasks() {
+                const list = document.getElementById('task-list');
+                list.innerHTML = '';
+                
+                let tasks = this.db.data.tasks;
+                if(this.filterMode === 'active') tasks = tasks.filter(t => !t.done);
+                if(this.filterMode === 'completed') tasks = tasks.filter(t => t.done);
+                
+                tasks.sort((a,b) => (a.done === b.done) ? 0 : a.done ? 1 : -1);
+
+                if(tasks.length === 0) {
+                    list.innerHTML = `<div class="text-center py-10 opacity-50"><img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Sleep" class="w-16 h-16 mx-auto mb-2 grayscale"><p class="text-xs">Kosong melompong.</p></div>`;
+                    return;
+                }
+
+                tasks.forEach(t => {
+                    const catColors = { life: 'bg-green-500/20 text-green-400', work: 'bg-blue-500/20 text-blue-400', urgent: 'bg-red-500/20 text-red-400' };
+                    const el = document.createElement('div');
+                    el.className = `task-slide-enter glass-card p-4 rounded-xl flex items-center gap-3 active:scale-[0.98] transition-transform ${t.done ? 'opacity-50 grayscale' : ''}`;
+                    el.innerHTML = `
+                        <div onclick="App.toggleTask('${t.id}')" class="shrink-0 w-6 h-6 rounded-full border-2 ${t.done ? 'bg-[var(--accent)] border-[var(--accent)]' : 'border-slate-500'} flex items-center justify-center">
+                            ${t.done ? '<i data-lucide="check" class="w-3 h-3 text-black font-bold"></i>' : ''}
+                        </div>
+                        <div class="flex-1 overflow-hidden" onclick="App.toggleTask('${t.id}')">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded ${catColors[t.cat]}">${t.cat}</span>
+                            </div>
+                            <p class="text-sm font-medium truncate ${t.done ? 'line-through text-slate-500' : 'text-slate-200'}">${t.text}</p>
+                        </div>
+                        <button onclick="App.deleteTask('${t.id}')" class="p-2 text-slate-500 hover:text-red-400 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    `;
+                    list.appendChild(el);
+                });
+                lucide.createIcons();
+            },
+
+            renderShop() {
+                const grid = document.getElementById('shop-grid');
+                grid.innerHTML = '';
+                const inv = this.db.data.inventory;
+                document.getElementById('shop-balance').innerText = this.db.data.user.xp + ' XP';
+
+                DATA.items.forEach(item => {
+                    const owned = inv.includes(item.id);
+                    const el = document.createElement('div');
+                    el.className = 'glass-card p-4 rounded-xl flex items-center justify-between';
+                    el.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-slate-800 rounded-lg text-[var(--accent)]"><i data-lucide="${item.icon}"></i></div>
+                            <div>
+                                <h4 class="font-bold text-sm">${item.name}</h4>
+                                <span class="text-xs text-slate-400">${item.cost} XP</span>
+                            </div>
+                        </div>
+                        <button onclick="App.buy('${item.id}', ${item.cost})" class="px-4 py-2 rounded-lg text-xs font-bold ${owned ? 'bg-green-500/20 text-green-400' : 'bg-white text-black'}">
+                            ${owned ? 'Dipakai' : 'Beli'}
+                        </button>
+                    `;
+                    grid.appendChild(el);
+                });
+                lucide.createIcons();
+            },
+
+            renderChart() {
+                const ctx = document.getElementById('statsChart').getContext('2d');
+                if(window.myChart) window.myChart.destroy();
+                
+                const s = this.db.data.stats;
+                window.myChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Selesai', 'Dihapus', 'Dibuat'],
+                        datasets: [{
+                            data: [s.completed, s.deleted, s.created],
+                            backgroundColor: ['#22c55e', '#ef4444', '#6366f1'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        plugins: { 
+                            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } 
+                        } 
+                    }
+                });
+            },
+
+            updateStats() {
+                const u = this.db.data.user;
+                // Header Stats
+                document.getElementById('header-xp').innerText = `${u.xp} XP`;
+                const progress = (u.xp % 500) / 500 * 100;
+                document.getElementById('header-progress').style.width = `${progress}%`;
+                
+                const rankIndex = Math.min(u.level - 1, DATA.ranks.length - 1);
+                document.getElementById('user-rank').innerText = `${DATA.ranks[rankIndex]} • Lvl ${u.level}`;
+                
+                // Dashboard Widgets
+                document.getElementById('stat-tasks').innerText = this.db.data.tasks.filter(t => !t.done).length;
+                document.getElementById('stat-wacana').innerText = this.db.data.tasks.length;
+            },
+
+            setupTheme() {
+                const theme = this.db.data.user.theme;
+                document.body.className = `h-screen flex flex-col ${theme.replace('-', '_')}`;
+                
+                // CSS override for body classes handled by tailwind logic somewhat, but specific variables need injection
+                if(theme === 'theme-toxic') document.documentElement.style.setProperty('--accent', '#22c55e');
+                else if(theme === 'theme-blood') document.documentElement.style.setProperty('--accent', '#ef4444');
+                else if(theme === 'theme-gold') document.documentElement.style.setProperty('--accent', '#eab308');
+                else if(theme === 'theme-cyber') document.documentElement.style.setProperty('--accent', '#06b6d4');
+                else document.documentElement.style.setProperty('--accent', '#6366f1');
+            },
+
+            toggleSound() {
+                this.db.data.user.sound = !this.db.data.user.sound;
+                this.db.save();
+                document.getElementById('sound-status').innerText = this.db.data.user.sound ? "ON" : "OFF";
+                document.getElementById('sound-status').className = `text-xs font-mono ${this.db.data.user.sound ? 'text-green-400' : 'text-red-400'}`;
+            }
+        };
+
+        // --- POMODORO ---
+        let timerInt;
+        const Pomodoro = {
+            time: 25 * 60,
+            active: false,
+            toggle() {
+                Utils.vibrate();
+                const btn = document.getElementById('timer-btn');
+                if(this.active) {
+                    clearInterval(timerInt);
+                    this.active = false;
+                    btn.innerText = "Lanjut";
+                } else {
+                    this.active = true;
+                    btn.innerText = "Pause";
+                    timerInt = setInterval(() => {
+                        this.time--;
+                        this.update();
+                        if(this.time <= 0) {
+                            clearInterval(timerInt);
+                            App.addXP(100);
+                            Swal.fire({ title: 'Fokus Selesai!', icon: 'success', background: '#18181b', color: '#fff' });
+                            this.reset();
+                        }
+                    }, 1000);
+                }
+            },
+            reset() {
+                clearInterval(timerInt);
+                this.active = false;
+                this.time = 25 * 60;
+                document.getElementById('timer-btn').innerText = "Mulai Fokus";
+                this.update();
+            },
+            update() {
+                const m = Math.floor(this.time / 60);
+                const s = this.time % 60;
+                document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+                
+                // Update SVG Ring
+                const circle = document.getElementById('timer-ring');
+                const radius = circle.r.baseVal.value;
+                const circumference = radius * 2 * Math.PI;
+                const offset = circumference - (this.time / (25 * 60)) * circumference;
+                circle.style.strokeDashoffset = offset;
+            }
+        };
+
+        // --- DATA MANAGER ---
+        const DataMgr = {
+            backup() {
+                const str = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(App.db.data));
+                const node = document.createElement('a');
+                node.href = str;
+                node.download = "sarcastic_mobile_backup.json";
+                node.click();
+            },
+            reset() {
+                Swal.fire({ title: 'Yakin?', text: 'Semua data akan hilang selamanya.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', background: '#18181b', color: '#fff' }).then(r => {
+                    if(r.isConfirmed) {
+                        localStorage.removeItem(App.db.key);
+                        location.reload();
+                    }
+                });
+            }
+        };
+
+        // --- INIT ---
+        window.onload = () => App.init();
+    </script>
+</body>
+</html>
