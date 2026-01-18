@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
@@ -646,4 +647,714 @@
         window.onload = () => App.init();
     </script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarcastic OS: Ultimate Prokrastinasi Suite</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CORE VISUALS --- */
+        :root {
+            --primary: #6366f1;
+            --bg-dark: #0f172a;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-shine: rgba(255, 255, 255, 0.03);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #000000;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 100%, hsla(225,39%,20%,1) 0, transparent 50%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* --- THEMES (Dynamic) --- */
+        body.theme-toxic { --primary: #22c55e; }
+        body.theme-blood { --primary: #ef4444; }
+        body.theme-gold { --primary: #eab308; }
+
+        /* --- GLASSMORPHISM --- */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+        }
+        .glass-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .glass-btn:active { transform: translateY(0); }
+
+        /* --- UTILS --- */
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px var(--primary); } 50% { box-shadow: 0 0 20px var(--primary); } }
+        .animate-glow { animation: glow 3s infinite; }
+
+        .task-enter { animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .modal-enter { animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes modalPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+        /* --- TOAST --- */
+        #toast-container { pointer-events: none; }
+        .toast-msg { pointer-events: auto; }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row h-screen overflow-hidden text-sm md:text-base">
+
+    <nav class="w-full md:w-20 lg:w-64 glass-panel border-r border-white/5 flex flex-col justify-between z-20 flex-shrink-0">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 animate-float">
+                    <i data-lucide="ghost" class="text-white w-6 h-6"></i>
+                </div>
+                <h1 class="font-bold text-xl tracking-tight hidden lg:block">Sarcastic<span class="text-indigo-400">OS</span></h1>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="App.navigate('dashboard')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl bg-white/10 text-white font-medium transition-all">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span class="hidden lg:block">Workspace</span>
+                </button>
+                <button onclick="App.navigate('shop')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    <span class="hidden lg:block">Black Market</span>
+                </button>
+                <button onclick="App.navigate('achievements')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <i data-lucide="trophy" class="w-5 h-5"></i>
+                    <span class="hidden lg:block">Penghargaan</span>
+                </button>
+                <button onclick="App.navigate('settings')" class="nav-btn w-full flex items-center gap-3 p-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    <span class="hidden lg:block">Settings</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-white/5 hidden lg:block">
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-4 border border-white/5">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Level <span id="lvl-display">1</span></span>
+                    <span id="xp-display" class="text-xs font-mono text-indigo-400">0 XP</span>
+                </div>
+                <div class="w-full bg-slate-700 h-1.5 rounded-full overflow-hidden">
+                    <div id="xp-bar" class="h-full bg-indigo-500 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                </div>
+                <p id="rank-name" class="text-xs mt-2 text-slate-300 italic">"Beban Keluarga"</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 relative overflow-hidden flex flex-col">
+        
+        <header class="h-16 border-b border-white/5 flex items-center justify-between px-6 glass-panel z-10">
+            <h2 id="page-title" class="font-bold text-lg text-slate-200">Dashboard Kehampaan</h2>
+            <div class="flex items-center gap-4">
+                <div class="bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 text-indigo-400 text-xs font-mono flex items-center gap-2">
+                    <div class="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                    SYSTEM ONLINE
+                </div>
+                <button class="relative group">
+                    <i data-lucide="bell" class="w-5 h-5 text-slate-400 group-hover:text-white transition"></i>
+                    <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 border-2 border-slate-900"></div>
+            </div>
+        </header>
+
+        <div id="view-container" class="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8 relative">
+            
+            <div id="view-dashboard" class="space-y-6 max-w-5xl mx-auto">
+                <div class="glass-panel rounded-3xl p-8 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition transform group-hover:rotate-12">
+                        <i data-lucide="quote" class="w-32 h-32 text-white"></i>
+                    </div>
+                    <h3 class="text-indigo-400 font-mono text-xs uppercase tracking-widest mb-2">Daily Motivation</h3>
+                    <h1 id="sarcastic-quote" class="text-2xl md:text-3xl font-bold leading-tight max-w-2xl">
+                        "Loading hinaan..."
+                    </h1>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <input type="text" id="task-input" placeholder="Tulis rencana wacanamu..." 
+                                class="flex-1 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition text-white">
+                            <button onclick="Tasks.add()" class="bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-xl transition shadow-lg shadow-indigo-500/20 active:scale-95">
+                                <i data-lucide="plus" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                            <button onclick="Tasks.filter('all')" class="filter-chip active px-4 py-1.5 rounded-full text-xs font-medium bg-white/10 border border-white/5 text-white whitespace-nowrap transition">Semua</button>
+                            <button onclick="Tasks.filter('active')" class="filter-chip px-4 py-1.5 rounded-full text-xs font-medium bg-transparent border border-slate-700 text-slate-400 whitespace-nowrap hover:bg-white/5 transition">Belum Kelar</button>
+                            <button onclick="Tasks.filter('completed')" class="filter-chip px-4 py-1.5 rounded-full text-xs font-medium bg-transparent border border-slate-700 text-slate-400 whitespace-nowrap hover:bg-white/5 transition">Keajaiban</button>
+                        </div>
+
+                        <div id="task-list" class="space-y-3 min-h-[300px]">
+                            </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="glass-panel rounded-2xl p-6 text-center relative overflow-hidden">
+                            <div class="absolute inset-0 bg-indigo-500/5 z-0"></div>
+                            <h3 class="text-sm font-semibold text-slate-300 mb-4 relative z-10 flex items-center justify-center gap-2"><i data-lucide="timer" class="w-4 h-4"></i> Mode Fokus</h3>
+                            <div id="timer-display" class="text-5xl font-mono font-bold text-white mb-6 relative z-10 tracking-wider">25:00</div>
+                            <div class="flex gap-2 relative z-10">
+                                <button onclick="Pomodoro.toggle()" id="timer-btn" class="flex-1 bg-white text-black font-bold py-2 rounded-lg hover:bg-slate-200 transition">Mulai</button>
+                                <button onclick="Pomodoro.reset()" class="w-12 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-2xl p-6">
+                            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Statistik Kemalasan</h3>
+                            <canvas id="productivityChart" height="180"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-shop" class="hidden max-w-5xl mx-auto space-y-6">
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h2 class="text-2xl font-bold">Black Market</h2>
+                        <p class="text-slate-400">Tukarkan XP dengan barang tak berguna.</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-slate-400 uppercase">Saldo Anda</div>
+                        <div class="text-2xl font-mono font-bold text-yellow-400" id="shop-xp">0 XP</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="shop-grid">
+                    </div>
+            </div>
+
+            <div id="view-achievements" class="hidden max-w-5xl mx-auto space-y-6">
+                <h2 class="text-2xl font-bold">Hall of Shame</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="badge-grid">
+                    </div>
+            </div>
+
+             <div id="view-settings" class="hidden max-w-2xl mx-auto space-y-6">
+                <h2 class="text-2xl font-bold">Pengaturan</h2>
+                <div class="glass-panel rounded-2xl p-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-medium text-white">Hardcore Mode</div>
+                            <div class="text-xs text-slate-400">Jika aktif, tugas yang tidak selesai dalam 1 jam akan menghina orang tua.</div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" disabled>
+                            <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
+                        </label>
+                    </div>
+                    <div class="border-t border-slate-700 pt-4">
+                        <button onclick="App.resetData()" class="w-full py-3 rounded-xl border border-red-500/50 text-red-500 hover:bg-red-500/10 transition font-bold uppercase text-sm">Reset Semua Data (Factory Reset)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3"></div>
+
+    <script>
+        /**
+         * SARCASTIC OS ENGINE CORE
+         * Architecture: Modular Object Literal Pattern
+         */
+
+        // --- DATABASE & STATE ---
+        const DB = {
+            data: {
+                xp: 0,
+                level: 1,
+                tasks: [],
+                inventory: [],
+                badges: [],
+                stats: [0,0,0,0,0,0,0], // Last 7 days
+                theme: 'default'
+            },
+            init() {
+                const saved = localStorage.getItem('sarcastic_os_v1');
+                if (saved) this.data = JSON.parse(saved);
+                this.save();
+            },
+            save() {
+                localStorage.setItem('sarcastic_os_v1', JSON.stringify(this.data));
+                App.updateUI();
+            },
+            reset() {
+                localStorage.removeItem('sarcastic_os_v1');
+                location.reload();
+            }
+        };
+
+        // --- CONSTANTS ---
+        const QUOTES = [
+            "Wah, rajin sekali. Pasti bohong.",
+            "Tugas ini tidak akan mengerjakan dirinya sendiri, tapi kamu juga nggak akan ngerjain sih.",
+            "Semangat! Masih ada 50 tahun lagi sebelum pensiun.",
+            "Apakah produktivitas itu nyata? Atau hanya ilusi kapitalisme?",
+            "Rebahan adalah bentuk perlawanan terbaik.",
+            "Jangan lupa minum air, biar nangisnya lancar.",
+            "Kamu sebut ini 'kerja'? Lucu.",
+            "Deadline adalah sugesti."
+        ];
+
+        const RANKS = [
+            { xp: 0, title: "Plankton Kantor" },
+            { xp: 500, title: "Sarjana Wacana" },
+            { xp: 1500, title: "Magister Penundaan" },
+            { xp: 3000, title: "Doktor Alasan" },
+            { xp: 5000, title: "Dewa Gabut" }
+        ];
+
+        const SHOP_ITEMS = [
+            { id: 'theme_toxic', name: 'Toxic Green Theme', cost: 500, type: 'theme', desc: 'Warna hijau radioaktif.' },
+            { id: 'theme_blood', name: 'Panic Red Theme', cost: 800, type: 'theme', desc: 'Nuansa deadline mepet.' },
+            { id: 'item_coffee', name: 'Kopi Digital', cost: 100, type: 'consumable', desc: 'Tidak ada efeknya. Buang XP aja.' },
+            { id: 'item_ticket', name: 'Tiket Surga (Palsu)', cost: 5000, type: 'collectible', desc: 'Semoga amal ibadah diterima.' }
+        ];
+
+        // --- APP CONTROLLER ---
+        const App = {
+            activeView: 'dashboard',
+
+            init() {
+                DB.init();
+                this.renderTasks();
+                this.renderStats();
+                this.renderShop();
+                this.refreshQuote();
+                
+                // Initialize Lucide Icons
+                lucide.createIcons();
+
+                // Setup Sortable
+                new Sortable(document.getElementById('task-list'), {
+                    animation: 150,
+                    ghostClass: 'opacity-50',
+                    onEnd: () => {
+                        // In reality we should update DB order here, but let's fake it for UI speed
+                        Toast.show("Urutan diubah. Nasib tetap sama.", "info");
+                    }
+                });
+
+                // Apply saved theme
+                if(DB.data.theme !== 'default') document.body.classList.add(DB.data.theme);
+            },
+
+            navigate(viewId) {
+                // Hide all views
+                ['dashboard', 'shop', 'achievements', 'settings'].forEach(v => {
+                    document.getElementById(`view-${v}`).classList.add('hidden');
+                });
+                // Show target
+                const target = document.getElementById(`view-${viewId}`);
+                target.classList.remove('hidden');
+                target.classList.add('modal-enter');
+                
+                // Update nav state (simplified)
+                this.activeView = viewId;
+                document.getElementById('page-title').innerText = viewId === 'dashboard' ? 'Dashboard Kehampaan' : 
+                                                                 viewId === 'shop' ? 'Black Market' : 
+                                                                 viewId === 'achievements' ? 'Prestasi Memalukan' : 'Pengaturan';
+
+                if(viewId === 'shop') {
+                    document.getElementById('shop-xp').innerText = `${DB.data.xp} XP`;
+                }
+                
+                lucide.createIcons();
+            },
+
+            refreshQuote() {
+                const q = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+                document.getElementById('sarcastic-quote').innerText = `"${q}"`;
+            },
+
+            updateUI() {
+                // XP & Level Logic
+                const currentXp = DB.data.xp;
+                const currentLvl = Math.floor(currentXp / 500) + 1;
+                const nextLvlXp = currentLvl * 500;
+                const prevLvlXp = (currentLvl - 1) * 500;
+                const progress = ((currentXp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
+
+                document.getElementById('xp-display').innerText = `${currentXp} XP`;
+                document.getElementById('lvl-display').innerText = currentLvl;
+                document.getElementById('xp-bar').style.width = `${progress}%`;
+                
+                // Rank Title
+                const rank = RANKS.slice().reverse().find(r => currentXp >= r.xp) || RANKS[0];
+                document.getElementById('rank-name').innerText = rank.title;
+            },
+
+            resetData() {
+                if(confirm("Yakin? Semua XP hasil keringat (bohong)mu akan hilang.")) {
+                    DB.reset();
+                }
+            }
+        };
+
+        // --- TASK MANAGER ---
+        const Tasks = {
+            filterMode: 'all',
+
+            add() {
+                const input = document.getElementById('task-input');
+                const text = input.value.trim();
+                if (!text) return Toast.show("Ketik sesuatu woy!", "error");
+
+                DB.data.tasks.unshift({
+                    id: Date.now(),
+                    text: text,
+                    done: false,
+                    createdAt: new Date()
+                });
+                
+                input.value = '';
+                DB.save();
+                App.renderTasks();
+                Toast.show("Beban hidup bertambah 1.", "success");
+            },
+
+            toggle(id) {
+                const task = DB.data.tasks.find(t => t.id === id);
+                if (task) {
+                    task.done = !task.done;
+                    if (task.done) {
+                        Gamification.awardXP(50);
+                        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                        Toast.show("Tumben produktif.", "success");
+                    } else {
+                        Toast.show("Yah, batal. Dasar plin-plan.", "warning");
+                    }
+                    DB.save();
+                    App.renderTasks();
+                }
+            },
+
+            delete(id) {
+                DB.data.tasks = DB.data.tasks.filter(t => t.id !== id);
+                Gamification.awardXP(-10); // Penalty
+                DB.save();
+                App.renderTasks();
+                Toast.show("Masalah dihapus (XP -10).", "error");
+            },
+
+            filter(mode) {
+                this.filterMode = mode;
+                // UI update for chips
+                document.querySelectorAll('.filter-chip').forEach(el => {
+                    el.classList.remove('bg-white/10', 'border-white/5', 'text-white');
+                    el.classList.add('bg-transparent', 'text-slate-400');
+                    if(el.getAttribute('onclick').includes(mode)) {
+                        el.classList.add('bg-white/10', 'border-white/5', 'text-white');
+                        el.classList.remove('bg-transparent', 'text-slate-400');
+                    }
+                });
+                App.renderTasks();
+            }
+        };
+
+        // Inject renderTasks into App for organization, but define logic here
+        App.renderTasks = function() {
+            const list = document.getElementById('task-list');
+            list.innerHTML = '';
+
+            const filtered = DB.data.tasks.filter(t => {
+                if (Tasks.filterMode === 'active') return !t.done;
+                if (Tasks.filterMode === 'completed') return t.done;
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="text-center py-10 text-slate-500 italic border-2 border-dashed border-slate-800 rounded-xl">
+                    "${Tasks.filterMode === 'completed' ? 'Belum ada prestasi.' : 'Hidupmu kosong. Bagus.'}"
+                </div>`;
+                return;
+            }
+
+            filtered.forEach(task => {
+                const el = document.createElement('div');
+                el.className = `task-enter group glass-panel p-4 rounded-xl flex items-center gap-4 transition-all hover:bg-white/5 ${task.done ? 'opacity-50 grayscale' : ''}`;
+                el.innerHTML = `
+                    <div class="cursor-pointer" onclick="Tasks.toggle(${task.id})">
+                        <div class="w-6 h-6 rounded-full border-2 ${task.done ? 'bg-indigo-500 border-indigo-500' : 'border-slate-500'} flex items-center justify-center transition">
+                            ${task.done ? '<i data-lucide="check" class="w-3 h-3 text-white"></i>' : ''}
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-medium ${task.done ? 'line-through text-slate-500' : 'text-slate-200'}">${task.text}</p>
+                    </div>
+                    <button onclick="Tasks.delete(${task.id})" class="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/20 hover:text-red-400 rounded-lg transition">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                    <div class="cursor-move opacity-0 group-hover:opacity-50 hover:opacity-100 transition p-2">
+                        <i data-lucide="grip-vertical" class="w-4 h-4 text-slate-500"></i>
+                    </div>
+                `;
+                list.appendChild(el);
+            });
+            lucide.createIcons();
+        };
+
+        // --- SHOP SYSTEM ---
+        App.renderShop = function() {
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
+            
+            SHOP_ITEMS.forEach(item => {
+                const owned = DB.data.inventory.includes(item.id);
+                const el = document.createElement('div');
+                el.className = 'glass-panel p-6 rounded-2xl flex flex-col justify-between h-full relative overflow-hidden group hover:border-indigo-500/50 transition';
+                el.innerHTML = `
+                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 bg-slate-800 rounded-xl">
+                                <i data-lucide="${item.type === 'theme' ? 'palette' : 'coffee'}" class="w-6 h-6 text-indigo-400"></i>
+                            </div>
+                            <span class="font-mono text-xs py-1 px-2 rounded bg-slate-800 text-slate-300">${item.cost} XP</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-1">${item.name}</h3>
+                        <p class="text-sm text-slate-400 leading-relaxed mb-4">${item.desc}</p>
+                    </div>
+                    <button onclick="Gamification.buy('${item.id}', ${item.cost})" 
+                        class="relative z-10 w-full py-2 rounded-xl font-bold text-sm transition ${owned ? 'bg-green-500/20 text-green-400 cursor-default' : 'bg-white text-black hover:bg-indigo-500 hover:text-white'}">
+                        ${owned ? 'Sudah Punya' : 'Beli Sekarang'}
+                    </button>
+                `;
+                grid.appendChild(el);
+            });
+        };
+
+        // --- GAMIFICATION ---
+        const Gamification = {
+            awardXP(amount) {
+                DB.data.xp += amount;
+                if(DB.data.xp < 0) DB.data.xp = 0;
+                
+                // Analytics Hook (Fake)
+                const today = new Date().getDay();
+                DB.data.stats[today] += (amount > 0 ? 1 : 0);
+                
+                DB.save();
+                App.updateUI(); // Updates bars/levels
+                if(amount > 0) this.checkLevelUp();
+            },
+
+            checkLevelUp() {
+                // Simplified level up trigger
+                const currentLvl = Math.floor(DB.data.xp / 500) + 1;
+                if (currentLvl > DB.data.level) {
+                    DB.data.level = currentLvl;
+                    Toast.show(`LEVEL UP! Sekarang Level ${currentLvl}. Masih beban.`, "success");
+                    confetti({ spread: 180 });
+                }
+            },
+
+            buy(itemId, cost) {
+                if(DB.data.inventory.includes(itemId)) return;
+                
+                if(DB.data.xp >= cost) {
+                    DB.data.xp -= cost;
+                    DB.data.inventory.push(itemId);
+                    
+                    if(itemId.startsWith('theme_')) {
+                        document.body.className = `flex flex-col md:flex-row h-screen overflow-hidden text-sm md:text-base ${itemId}`;
+                        DB.data.theme = itemId;
+                        Toast.show("Tema terpasang. Mata sakit ya?", "success");
+                    } else {
+                        Toast.show("Item sampah berhasil dibeli!", "success");
+                    }
+                    
+                    DB.save();
+                    App.renderShop();
+                    App.updateUI();
+                } else {
+                    Toast.show("XP Miskin. Kerja lagi sana.", "error");
+                }
+            }
+        };
+
+        // --- POMODORO ---
+        let timerInterval;
+        const Pomodoro = {
+            timeLeft: 25 * 60,
+            isRunning: false,
+            
+            toggle() {
+                const btn = document.getElementById('timer-btn');
+                if (this.isRunning) {
+                    clearInterval(timerInterval);
+                    this.isRunning = false;
+                    btn.innerText = "Lanjut";
+                    btn.classList.remove('bg-red-500', 'text-white');
+                    btn.classList.add('bg-white', 'text-black');
+                } else {
+                    this.isRunning = true;
+                    btn.innerText = "Pause";
+                    btn.classList.remove('bg-white', 'text-black');
+                    btn.classList.add('bg-red-500', 'text-white');
+                    Toast.show("Timer jalan. Dilarang buka TikTok.", "info");
+                    
+                    timerInterval = setInterval(() => {
+                        this.timeLeft--;
+                        this.updateDisplay();
+                        if (this.timeLeft <= 0) {
+                            clearInterval(timerInterval);
+                            this.isRunning = false;
+                            Gamification.awardXP(100);
+                            new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3').play().catch(()=>{}); // Fake SFX attempt
+                            alert("Selesai! Kamu hebat (tumben).");
+                            this.reset();
+                        }
+                    }, 1000);
+                }
+            },
+            
+            reset() {
+                clearInterval(timerInterval);
+                this.isRunning = false;
+                this.timeLeft = 25 * 60;
+                this.updateDisplay();
+                const btn = document.getElementById('timer-btn');
+                btn.innerText = "Mulai";
+                btn.className = "flex-1 bg-white text-black font-bold py-2 rounded-lg hover:bg-slate-200 transition";
+            },
+            
+            updateDisplay() {
+                const m = Math.floor(this.timeLeft / 60);
+                const s = this.timeLeft % 60;
+                document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            }
+        };
+
+        // --- CHART JS ---
+        App.renderStats = function() {
+            const ctx = document.getElementById('productivityChart').getContext('2d');
+            
+            // Generate standard fake data if empty
+            const data = DB.data.stats.every(v => v===0) ? [2, 5, 3, 8, 1, 0, 4] : DB.data.stats;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
+                    datasets: [{
+                        label: 'Tingkat Kepura-puraan',
+                        data: data,
+                        borderColor: '#6366f1',
+                        backgroundColor: (context) => {
+                            const bg = context.chart.ctx.createLinearGradient(0, 0, 0, 200);
+                            bg.addColorStop(0, 'rgba(99, 102, 241, 0.5)');
+                            bg.addColorStop(1, 'rgba(99, 102, 241, 0)');
+                            return bg;
+                        },
+                        borderWidth: 2,
+                        pointBackgroundColor: '#fff',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans' } }
+                        }
+                    }
+                }
+            });
+        };
+
+        // --- TOAST NOTIFICATIONS ---
+        const Toast = {
+            show(msg, type = 'default') {
+                const container = document.getElementById('toast-container');
+                const el = document.createElement('div');
+                const colors = {
+                    success: 'border-green-500 bg-green-500/10 text-green-400',
+                    error: 'border-red-500 bg-red-500/10 text-red-400',
+                    warning: 'border-yellow-500 bg-yellow-500/10 text-yellow-400',
+                    info: 'border-indigo-500 bg-indigo-500/10 text-indigo-400',
+                    default: 'border-slate-500 bg-slate-800 text-slate-200'
+                };
+                
+                el.className = `toast-msg glass-panel border px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300 ${colors[type] || colors.default}`;
+                el.innerHTML = `
+                    <div class="w-2 h-2 rounded-full ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-indigo-500'}"></div>
+                    <span class="font-medium text-sm">${msg}</span>
+                `;
+                
+                container.appendChild(el);
+                
+                // Animate in
+                setTimeout(() => {
+                    el.classList.remove('translate-y-10', 'opacity-0');
+                }, 10);
+
+                // Remove
+                setTimeout(() => {
+                    el.classList.add('opacity-0', 'translate-x-full');
+                    setTimeout(() => el.remove(), 300);
+                }, 3000);
+            }
+        };
+
+        // --- INIT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            App.init();
+            
+            // Standard Event Listeners
+            document.getElementById('task-input').addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') Tasks.add();
+            });
+        });
+
+    </script>
+</body>
+>>>>>>> 8c80c2d5e9baa68b82bebf4e1f7442316ed5d69a
 </html>
