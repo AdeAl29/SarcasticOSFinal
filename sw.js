@@ -43,9 +43,16 @@ self.addEventListener('activate', (event) => {
 
 // 3. Fetch Strategy: Cache First, Network Fallback
 self.addEventListener('fetch', (event) => {
+    // Avoid caching audio/video or range requests (breaks media streaming on some browsers)
+    const req = event.request;
+    const isMedia = req.destination === 'audio' || req.destination === 'video';
+    const isRange = req.headers.has('range');
+    if (isMedia || isRange) {
+        return event.respondWith(fetch(req));
+    }
     event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
+        caches.match(req).then((response) => {
+            return response || fetch(req);
         })
     );
 });
