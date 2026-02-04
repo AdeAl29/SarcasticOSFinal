@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sarcastic-os-v6-offline';
+const CACHE_NAME = 'sarcastic-os-v7-offline';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -18,6 +18,7 @@ const ASSETS_TO_CACHE = [
 
 // 1. Install Service Worker & Cache Assets
 self.addEventListener('install', (event) => {
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             console.log('[SarcasticOS] Caching assets offline...');
@@ -36,7 +37,7 @@ self.addEventListener('activate', (event) => {
                     return caches.delete(key);
                 }
             }));
-        })
+        }).then(() => self.clients.claim())
     );
 });
 
