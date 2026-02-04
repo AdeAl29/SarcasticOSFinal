@@ -14,6 +14,13 @@ body.theme-ocean { --primary: #0ea5e9; --bg-body: #082f49; }
 body.theme-barbie { --primary: #ec4899; --bg-body: #500724; }  
 body.theme-sunset { --primary: #f97316; --bg-body: #431407; }  
 body.theme-midnight { --primary: #94a3b8; --bg-body: #000000; } 
+body.theme-forest { --primary: #16a34a; --bg-body: #052e16; }
+body.theme-ember { --primary: #f97316; --bg-body: #2a0f04; }
+body.theme-rose { --primary: #f43f5e; --bg-body: #4c0519; }
+body.theme-royal { --primary: #1d4ed8; --bg-body: #0b1033; }
+body.theme-mint { --primary: #14b8a6; --bg-body: #042f2e; }
+body.theme-slate { --primary: #64748b; --bg-body: #0f172a; }
+body.theme-mocha { --primary: #a16207; --bg-body: #2a1406; }
 
 body {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -58,7 +65,7 @@ body {
     justify-content: space-between;
     padding: 8px; /* Padding untuk ruang slider */
     width: 90%;
-    max-width: 350px;
+    max-width: 420px;
     height: 70px;
     border-radius: 25px;
     background: rgba(15, 23, 42, 0.7);
@@ -256,4 +263,125 @@ button { cursor: inherit; }
 .text-debt { 
     color: #ef4444; 
     font-weight: 800; 
+}
+
+/* --- MINI GAMES --- */
+.game-card {
+    position: relative;
+    overflow: hidden;
+}
+.game-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(255,255,255,0.04), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.game-card:hover::after { opacity: 1; }
+.game-reward {
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(99,102,241,0.2);
+    border: 1px solid rgba(99,102,241,0.5);
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+.game-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+}
+.game-btn:active { transform: scale(0.96); }
+.game-btn.ghost {
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.game-btn.ready {
+    background: #22c55e;
+    box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+}
+.game-btn:disabled {
+    opacity: 0.5;
+}
+.game-input {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 10px;
+    width: 80px;
+    font-size: 12px;
+    font-weight: 700;
+    outline: none;
+}
+.game-status {
+    margin-top: 10px;
+    font-size: 10px;
+    color: #94a3b8;
+}
+.target-area {
+    position: relative;
+    height: 140px;
+    border-radius: 16px;
+    background: rgba(0,0,0,0.35);
+    border: 1px dashed rgba(255,255,255,0.12);
+    overflow: hidden;
+}
+.target-dot {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: radial-gradient(circle, #22c55e 0%, #16a34a 70%);
+    box-shadow: 0 0 20px rgba(34,197,94,0.5);
+    transition: transform 0.1s ease;
+}
+.target-dot:active { transform: scale(0.9); }
+.aim-dot {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: radial-gradient(circle, #38bdf8 0%, #0284c7 70%);
+    box-shadow: 0 0 18px rgba(56,189,248,0.5);
+    transition: transform 0.08s ease;
+}
+.aim-dot:active { transform: scale(0.9); }
+.memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+.memory-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    color: transparent;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.memory-card.flipped {
+    background: rgba(99,102,241,0.25);
+    color: #fff;
+    transform: scale(1.04);
+}
+.memory-card.matched {
+    background: rgba(34,197,94,0.25);
+    color: #fff;
 }

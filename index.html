@@ -183,6 +183,220 @@
             </div>
         </div>
 
+        <div id="view-games" class="hidden page-enter px-5 space-y-6 pb-20">
+            <div class="text-center mb-4">
+                <h2 class="text-2xl font-bold text-white">Mini Games XP Farm</h2>
+                <p class="text-xs text-slate-400">Main sebentar, panen XP. Jangan ketahuan bos.</p>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4 border border-white/10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-[10px] text-slate-400 uppercase font-bold">Saldo XP</div>
+                        <div class="text-xl font-bold text-white font-mono" id="games-xp">0</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] text-slate-400 uppercase font-bold">Rekor</div>
+                        <div class="text-[10px] text-slate-300">Tap: <span id="tap-best">0</span> | Reaksi: <span id="react-best">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-tap-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="mouse-pointer-2" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Tap Rage</h3>
+                    </div>
+                    <span class="game-reward">+30 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Tap 10x dalam 3 detik. Gagal = malu.</p>
+                <div class="flex items-center gap-3">
+                    <button id="tap-start" onclick="Games.startTap()" class="game-btn">MULAI</button>
+                    <button id="tap-btn" onclick="Games.tap()" class="game-btn ghost" disabled>TAP</button>
+                    <div class="ml-auto text-right">
+                        <div class="text-[10px] text-slate-400">Counter</div>
+                        <div class="text-sm font-bold text-white"><span id="tap-count">0</span>/10</div>
+                        <div class="text-[10px] text-slate-500" id="tap-timer">3.0s</div>
+                    </div>
+                </div>
+                <div class="game-status" id="tap-status">Siap? Pencet mulai.</div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-math-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="calculator" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Math Burst</h3>
+                    </div>
+                    <span class="game-reward">+40 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Jawab cepat. Streak = bonus.</p>
+                <div class="flex items-center gap-2">
+                    <div class="text-lg font-black text-white" id="math-question">--</div>
+                    <input id="math-answer" type="number" class="game-input" placeholder="jawab">
+                    <button onclick="Games.submitMath()" class="game-btn">GAS</button>
+                    <button onclick="Games.newMath()" class="game-btn ghost">MULAI</button>
+                </div>
+                <div class="game-status" id="math-status">Males? Tekan mulai.</div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-rps-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="hand" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Suit Dulu</h3>
+                    </div>
+                    <span class="game-reward">Menang +25 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Batu gunting kertas. Jangan nangis.</p>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="Games.rps('rock')" class="game-btn">BATU</button>
+                    <button onclick="Games.rps('paper')" class="game-btn">KERTAS</button>
+                    <button onclick="Games.rps('scissors')" class="game-btn">GUNTING</button>
+                    <div class="ml-auto text-[10px] text-slate-400" id="rps-status">Pilih senjata.</div>
+                </div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-react-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Reflex Panic</h3>
+                    </div>
+                    <span class="game-reward">Sampai +60 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Tunggu tombol hijau, klik secepatnya.</p>
+                <div class="flex items-center gap-3">
+                    <button id="react-start" onclick="Games.startReaction()" class="game-btn">MULAI</button>
+                    <button id="react-btn" onclick="Games.reactTap()" class="game-btn ghost" disabled>TUNGGU...</button>
+                    <div class="ml-auto text-[10px] text-slate-400" id="react-status">Jangan panik.</div>
+                </div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-lucky-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Lucky Button</h3>
+                    </div>
+                    <span class="game-reward">0-120 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Nekan doang, doa aja.</p>
+                <div class="flex items-center gap-3">
+                    <button id="lucky-btn" onclick="Games.spinLucky()" class="game-btn">PUTAR</button>
+                    <div class="text-[10px] text-slate-400" id="lucky-status">Gak ada jaminan.</div>
+                </div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-target-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="target" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Target Rush</h3>
+                    </div>
+                    <span class="game-reward">Sampai +70 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Hajar target muncul. 8 detik.</p>
+                <div class="flex items-center gap-3 mb-3">
+                    <button id="target-start" onclick="Games.startTarget()" class="game-btn">MULAI</button>
+                    <div class="text-[10px] text-slate-400" id="target-status">Belum pemanasan.</div>
+                    <div class="ml-auto text-[10px] text-slate-500">Hit: <span id="target-hits">0</span></div>
+                </div>
+                <div id="target-area" class="target-area">
+                    <button id="target-dot" class="target-dot hidden" onclick="Games.hitTarget()"></button>
+                </div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-guess-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="hash" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Guess Number</h3>
+                    </div>
+                    <span class="game-reward">+40 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Tebak angka 1-20, max 3x.</p>
+                <div class="flex items-center gap-2">
+                    <input id="guess-input" type="number" class="game-input" placeholder="1-20">
+                    <button onclick="Games.guessSubmit()" class="game-btn">TEBAK</button>
+                    <button onclick="Games.guessStart()" class="game-btn ghost">MULAI</button>
+                    <div class="ml-auto text-[10px] text-slate-400" id="guess-status">Belum mulai.</div>
+                </div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-challenge-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="swords" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Challenge Room</h3>
+                    </div>
+                    <span class="game-reward">+150 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Menang 2 game dalam 60 detik.</p>
+                <div class="flex items-center gap-3">
+                    <button id="challenge-start" onclick="Games.startChallenge()" class="game-btn">MULAI</button>
+                    <div class="text-[10px] text-slate-400" id="challenge-status">Belum siap.</div>
+                    <div class="ml-auto text-[10px] text-slate-500">Progress: <span id="challenge-progress">0</span>/2</div>
+                </div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-memory-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="layout-grid" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Memory Flip</h3>
+                    </div>
+                    <span class="game-reward">Sampai +80 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Cocokkan 6 pasang. Maks 25 detik.</p>
+                <div class="flex items-center gap-3 mb-3">
+                    <button id="memory-start" onclick="Games.startMemory()" class="game-btn">MULAI</button>
+                    <div class="text-[10px] text-slate-400" id="memory-status">Belum mulai.</div>
+                    <div class="ml-auto text-[10px] text-slate-500">Match: <span id="memory-match">0</span>/6</div>
+                </div>
+                <div class="memory-grid" id="memory-grid"></div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-aim-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="crosshair" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Quick Aim</h3>
+                    </div>
+                    <span class="game-reward">Sampai +75 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Target kecil muncul 10x. Hajar cepat.</p>
+                <div class="flex items-center gap-3 mb-3">
+                    <button id="aim-start" onclick="Games.startAim()" class="game-btn">MULAI</button>
+                    <div class="text-[10px] text-slate-400" id="aim-status">Belum mulai.</div>
+                    <div class="ml-auto text-[10px] text-slate-500">Hit: <span id="aim-hit">0</span>/10</div>
+                </div>
+                <div id="aim-area" class="target-area">
+                    <button id="aim-dot" class="aim-dot hidden" onclick="Games.hitAim()"></button>
+                </div>
+            </div>
+
+            <div class="game-card glass-panel rounded-2xl p-5 border border-white/10" id="game-typing-card">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="keyboard" class="w-4 h-4 text-accent"></i>
+                        <h3 class="font-bold text-white">Typing Rush</h3>
+                    </div>
+                    <span class="game-reward">Sampai +60 XP</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-4">Ketik 5 kata dalam 20 detik.</p>
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="text-sm font-bold text-white" id="typing-word">--</div>
+                    <input id="typing-input" class="game-input" placeholder="ketik">
+                    <button onclick="Games.typingSubmit()" class="game-btn">KIRIM</button>
+                    <button onclick="Games.startTyping()" class="game-btn ghost">MULAI</button>
+                    <div class="ml-auto text-[10px] text-slate-400">OK: <span id="typing-count">0</span>/5</div>
+                </div>
+                <div class="text-[10px] text-slate-400" id="typing-status">Belum mulai.</div>
+            </div>
+        </div>
+
         <div id="view-pet" class="hidden page-enter h-[75vh] flex flex-col items-center justify-center relative px-5">
             
             <div class="absolute inset-0 top-4 bottom-4 rounded-[3rem] bg-gradient-to-b from-indigo-900/40 to-slate-950/80 border border-white/5 -z-10 overflow-hidden shadow-2xl">
@@ -290,6 +504,11 @@
                 <div class="mt-8"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">🏆 Pencapaian</h3><div class="grid grid-cols-2 gap-3" id="achievements-list"></div></div>
                 <div class="mt-8"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Koleksi</h3><div class="flex gap-3 overflow-x-auto hide-scroll pb-2" id="inventory-list"></div></div>
 
+                <div class="mt-8">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Log Sarkas</h3>
+                    <div class="glass-panel rounded-2xl overflow-hidden divide-y divide-white/5" id="sarpent-log"></div>
+                </div>
+
                 <div class="mt-6 glass-panel rounded-2xl overflow-hidden divide-y divide-white/5">
                     <button id="btn-install-app" onclick="PWA.install()" class="w-full text-left p-4 active:bg-white/5 flex items-center justify-between hidden"><div class="flex items-center gap-3"><i data-lucide="smartphone" class="w-5 h-5 text-purple-400"></i> <span class="text-sm font-semibold text-purple-200">Install ke HP</span></div></button>
                     <button id="btn-enable-notif" onclick="Notif.request()" class="w-full text-left p-4 active:bg-white/5 flex items-center justify-between"><div class="flex items-center gap-3"><i data-lucide="bell" class="w-5 h-5 text-yellow-400"></i> <span class="text-sm font-semibold text-yellow-100">Izinkan Notifikasi</span></div><span id="notif-status" class="text-[10px] bg-white/10 px-2 py-0.5 rounded text-slate-400">OFF</span></button>
@@ -336,6 +555,7 @@
         <div id="dock-slider"></div>
         <button onclick="App.nav('home')" class="nav-btn active" id="nav-home"><i data-lucide="home" class="w-6 h-6 z-10 relative"></i></button>
         <button onclick="App.nav('apps')" class="nav-btn" id="nav-apps"><i data-lucide="grid" class="w-6 h-6 z-10 relative"></i></button>
+        <button onclick="App.nav('games')" class="nav-btn" id="nav-games"><i data-lucide="gamepad-2" class="w-6 h-6 z-10 relative"></i></button>
         <button onclick="App.nav('pet')" class="nav-btn" id="nav-pet"><i data-lucide="heart" class="w-6 h-6 z-10 relative"></i></button>
         <button onclick="App.nav('shop')" class="nav-btn" id="nav-shop"><i data-lucide="shopping-bag" class="w-6 h-6 z-10 relative"></i></button>
         <button onclick="App.nav('profile')" class="nav-btn" id="nav-profile"><div class="w-7 h-7 rounded-full overflow-hidden border border-slate-500 z-10 relative"><img id="nav-avatar-img" src="" class="w-full h-full object-cover"></div></button>

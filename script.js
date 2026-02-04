@@ -30,13 +30,22 @@ const CONFIG = {
         {id:'theme-barbie', name:'Princess Pink', cost:1500, color:'#ec4899', desc:'Uwu banget najis.'},
         {id:'theme-sunset', name:'Senja Indie', cost:1000, color:'#f97316', desc:'Kopi dan penyesalan.'},
         {id:'theme-midnight', name:'Dark Soul', cost:2500, color:'#94a3b8', desc:'Gelap segelap masa depan.'},
+        {id:'theme-forest', name:'Hutan Lembab', cost:1300, color:'#16a34a', desc:'Hijau tapi tetap stres.'},
+        {id:'theme-ember', name:'Bara Halus', cost:1400, color:'#f97316', desc:'Hangat tipis, hati dingin.'},
+        {id:'theme-rose', name:'Red Flag', cost:1600, color:'#f43f5e', desc:'Romantis tapi bahaya.'},
+        {id:'theme-royal', name:'Royal Blue', cost:1700, color:'#1d4ed8', desc:'Kaya tapi tetep capek.'},
+        {id:'theme-mint', name:'Mint Dingin', cost:1100, color:'#14b8a6', desc:'Seger, tapi dompet tetap kering.'},
+        {id:'theme-slate', name:'Slated Gray', cost:900, color:'#64748b', desc:'Netral, kayak perasaan dia.'},
+        {id:'theme-mocha', name:'Mocca Dark', cost:1500, color:'#a16207', desc:'Pahit tapi nagih.'}
     ],
     SHOP_WALLPAPERS: [
         {id:'wall-none', name:'No Wallpaper', cost:0, src:'', desc:'Hemat baterai.'},
         {id:'wall-rain', name:'Rainy Window', cost:3000, src:'https://player.vimeo.com/external/459389137.sd.mp4?s=955e8848f9836374f88198f79f22036c05d0505a&profile_id=165&oauth2_token_id=57447761', desc:'Galau maksimal.'},
         {id:'wall-matrix', name:'Matrix Code', cost:5000, src:'https://player.vimeo.com/external/180373418.sd.mp4?s=d01073153573c09e3e7f411802a8292358045b84&profile_id=164&oauth2_token_id=57447761', desc:'Hacker wannabe.'},
         {id:'wall-cyber', name:'Cyber City', cost:8000, src:'https://player.vimeo.com/external/371908581.sd.mp4?s=784c622540960570b5514f762696615967f1b202&profile_id=165&oauth2_token_id=57447761', desc:'Masa depan suram.'},
-        {id:'wall-cloud', name:'Dreamy Clouds', cost:4000, src:'https://player.vimeo.com/external/411326265.sd.mp4?s=3194a0808b5f3a0a6b99092498260662660d2b77&profile_id=165&oauth2_token_id=57447761', desc:'Terbang ke awan.'}
+        {id:'wall-cloud', name:'Dreamy Clouds', cost:4000, src:'https://player.vimeo.com/external/411326265.sd.mp4?s=3194a0808b5f3a0a6b99092498260662660d2b77&profile_id=165&oauth2_token_id=57447761', desc:'Terbang ke awan.'},
+        {id:'wall-waifu', name:'Waifu Loop', cost:4500, src:'waifu.mp4', desc:'Wibu mode aktif.'},
+        {id:'wall-waifu2', name:'Waifu Loop 2', cost:5500, src:'waifu2.mp4', desc:'Dua kali lebih wibu.'}
     ],
     SHOP_CURSORS: [
         {id:'cursor-default', name:'Default', cost:0, style:'auto', desc:'Biasa aja.'},
@@ -44,20 +53,31 @@ const CONFIG = {
         {id:'cursor-help', name:'Bingung', cost:500, style:'help', desc:'Tanda tanya abadi.'},
         {id:'cursor-middle', name:'F*ck You', cost:2000, style:'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewport=\'0 0 32 32\' style=\'fill:black;font-size:24px;\'><text y=\'20\'>🖕</text></svg>") 16 16, auto', desc:'Mood banget.'},
         {id:'cursor-money', name:'Duit', cost:5000, style:'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewport=\'0 0 32 32\' style=\'fill:black;font-size:24px;\'><text y=\'20\'>💸</text></svg>") 16 16, auto', desc:'Kursor sultan.'},
+        {id:'cursor-star', name:'Bintang', cost:700, style:'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewport=\'0 0 32 32\' style=\'fill:black;font-size:24px;\'><text y=\'20\'>⭐</text></svg>") 16 16, auto', desc:'Bintang kehidupan.'},
+        {id:'cursor-skull', name:'Tengkorak', cost:1200, style:'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewport=\'0 0 32 32\' style=\'fill:black;font-size:24px;\'><text y=\'20\'>💀</text></svg>") 16 16, auto', desc:'Mood dark.'},
+        {id:'cursor-fire', name:'Api', cost:1400, style:'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewport=\'0 0 32 32\' style=\'fill:black;font-size:24px;\'><text y=\'20\'>🔥</text></svg>") 16 16, auto', desc:'Panas terus.'},
+        {id:'cursor-spark', name:'Spark', cost:900, style:'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewport=\'0 0 32 32\' style=\'fill:black;font-size:24px;\'><text y=\'20\'>✨</text></svg>") 16 16, auto', desc:'Hoki palsu.'},
+        {id:'cursor-ice', name:'Dingin', cost:1100, style:'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewport=\'0 0 32 32\' style=\'fill:black;font-size:24px;\'><text y=\'20\'>❄️</text></svg>") 16 16, auto', desc:'Beku, kayak chat dia.'}
     ],
     SHOP_ITEMS: [
-        {id:'item-coffee', name:'Kopi Virtual', cost:50, icon:'coffee', desc:'Gak ngefek apa-apa.'},
-        {id:'item-medal', name:'Medali Palsu', cost:300, icon:'medal', desc:'Buat pamer doang.'},
-        {id:'item-shield', name:'Anti Omelan', cost:1000, icon:'shield', desc:'Ilusi keamanan.'},
-        {id:'item-ticket', name:'Tiket Libur', cost:5000, icon:'ticket', desc:'Mimpi.'},
-        {id:'item-crown', name:'Mahkota Raja', cost:10000, icon:'crown', desc:'Harta tahta wacana.'}
+        {id:'item-coffee', name:'Kopi Turbo', cost:200, icon:'coffee', desc:'Reset cooldown game.', effect:'cooldown', value:1},
+        {id:'item-snack', name:'Snack Pet', cost:300, icon:'apple', desc:'Pet +20 kenyang +5 sehat.', effect:'feed', value:{hunger:20, health:5}},
+        {id:'item-shield', name:'Pelunasan Parsial', cost:700, icon:'shield', desc:'Potong utang 500 XP.', effect:'loan', value:500},
+        {id:'item-ticket', name:'Tiket Gacha', cost:600, icon:'ticket', desc:'+1 tiket.', effect:'ticket', value:1},
+        {id:'item-scroll', name:'Scroll Motivasi', cost:900, icon:'sparkles', desc:'+80 XP instan.', effect:'xp', value:80},
+        {id:'item-crown', name:'Mahkota Palsu', cost:2000, icon:'crown', desc:'+200 XP instan.', effect:'xp', value:200}
     ],
     GACHA_ITEMS: [
         {id:'gacha-rare-1', name:'Kunci Surga', icon:'key', desc:'Palsu tapi meyakinkan.'},
         {id:'gacha-rare-2', name:'Sayap Goreng', icon:'feather', desc:'Bukan sayap malaikat.'},
         {id:'gacha-rare-3', name:'Tisu Bekas', icon:'scroll', desc:'Bekas air mata mantan.'},
         {id:'gacha-rare-4', name:'Angin Botolan', icon:'wind', desc:'Isinya kosong.'},
-        {id:'gacha-rare-5', name:'Jubah Gaib', icon:'ghost', desc:'Gak keliatan (emang ga ada).'}
+        {id:'gacha-rare-5', name:'Jubah Gaib', icon:'ghost', desc:'Gak keliatan (emang ga ada).'},
+        {id:'gacha-rare-6', name:'Bintang Retak', icon:'star', desc:'Masih kinclong dikit.'},
+        {id:'gacha-rare-7', name:'Tengkorak Imut', icon:'skull', desc:'Serem tapi lucu.'},
+        {id:'gacha-rare-8', name:'Kristal Buram', icon:'gem', desc:'Masa depan tetap suram.'},
+        {id:'gacha-rare-9', name:'Sirip Ikan', icon:'fish', desc:'Basah doang.'},
+        {id:'gacha-rare-10', name:'Koin Karat', icon:'coins', desc:'Antik gak laku.'}
     ],
     DAILY_REWARDS: [
         {xp:50, ticket:0, desc:"Uang jajan"},
@@ -854,6 +874,683 @@ const Bank = {
     }
 };
 
+const Games = {
+    tapActive: false,
+    tapCount: 0,
+    tapTimer: null,
+    tapStartTime: 0,
+    mathActive: false,
+    mathAnswer: 0,
+    mathTimer: null,
+    mathTimeLeft: 0,
+    reactionWaiting: false,
+    reactionReady: false,
+    reactionTimer: null,
+    reactionStart: 0,
+    cooldownTick: null,
+    cooldownConfig: { tap: 20, math: 12, rps: 5, reaction: 20, lucky: 30, target: 20, guess: 12, challenge: 60, memory: 25, aim: 20, typing: 18 },
+    statusMap: {
+        tap: { el: 'tap-status', idle: 'Siap? Pencet mulai.' },
+        math: { el: 'math-status', idle: 'Males? Tekan mulai.' },
+        rps: { el: 'rps-status', idle: 'Pilih senjata.' },
+        reaction: { el: 'react-status', idle: 'Jangan panik.' },
+        lucky: { el: 'lucky-status', idle: 'Gak ada jaminan.' },
+        target: { el: 'target-status', idle: 'Belum pemanasan.' },
+        guess: { el: 'guess-status', idle: 'Belum mulai.' },
+        challenge: { el: 'challenge-status', idle: 'Belum siap.' },
+        memory: { el: 'memory-status', idle: 'Belum mulai.' },
+        aim: { el: 'aim-status', idle: 'Belum mulai.' },
+        typing: { el: 'typing-status', idle: 'Belum mulai.' }
+    },
+    targetActive: false,
+    targetHits: 0,
+    targetTimer: null,
+    targetTimeout: null,
+    guessActive: false,
+    guessNumber: 0,
+    guessTries: 0,
+    challengeActive: false,
+    challengeTimer: null,
+    challengeProgress: 0,
+    challengeDeadline: 0,
+    memoryActive: false,
+    memoryCards: [],
+    memoryFlipped: [],
+    memoryMatches: 0,
+    memoryTimer: null,
+    aimActive: false,
+    aimHits: 0,
+    aimCount: 0,
+    aimTimer: null,
+    typingActive: false,
+    typingWords: ["deadline","rebahan","kopi","wacana","kerja","fokus","utang","mager","sarapan","rapat","ngopi","nugas"],
+    typingCount: 0,
+    typingTimer: null,
+    typingDeadline: 0,
+
+    init() {
+        this.ensureData();
+        this.updateXp();
+        this.updateBest();
+        const answer = document.getElementById('math-answer');
+        if(answer && !answer.dataset.bind) {
+            answer.addEventListener('keypress', e => { if(e.key === 'Enter') this.submitMath(); });
+            answer.dataset.bind = 'true';
+        }
+        const typing = document.getElementById('typing-input');
+        if(typing && !typing.dataset.bind) {
+            typing.addEventListener('keypress', e => { if(e.key === 'Enter') this.typingSubmit(); });
+            typing.dataset.bind = 'true';
+        }
+        if(this.cooldownTick) clearInterval(this.cooldownTick);
+        this.cooldownTick = setInterval(() => this.tickCooldowns(), 500);
+    },
+
+    ensureData() {
+        const g = App.db.data.games;
+        if(!g.cooldowns) g.cooldowns = { tap: 0, math: 0, rps: 0, reaction: 0, lucky: 0, target: 0, guess: 0, challenge: 0, memory: 0, aim: 0, typing: 0 };
+        if(!g.streaks) g.streaks = { math: 0 };
+        if(!g.best) g.best = { tapTime: 0, reactionTime: 0 };
+        App.db.save();
+    },
+
+    updateXp() {
+        const el = document.getElementById('games-xp');
+        if(el) el.innerText = App.db.data.user.xp;
+    },
+
+    updateBest() {
+        const tapBest = document.getElementById('tap-best');
+        const reactBest = document.getElementById('react-best');
+        const bestTap = App.db.data.games.best.tapTime;
+        const bestReact = App.db.data.games.best.reactionTime;
+        if(tapBest) tapBest.innerText = bestTap > 0 ? `${bestTap.toFixed(1)}s` : '0';
+        if(reactBest) reactBest.innerText = bestReact > 0 ? `${bestReact}ms` : '-';
+    },
+
+    timeLeft(id) {
+        const t = App.db.data.games.cooldowns[id] || 0;
+        return Math.max(0, Math.ceil((t - Date.now()) / 1000));
+    },
+
+    setCooldown(id, seconds) {
+        App.db.data.games.cooldowns[id] = Date.now() + (seconds * 1000);
+        App.db.save();
+    },
+
+    formatCooldown(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return m > 0 ? `${m}:${s.toString().padStart(2, '0')}` : `${s}s`;
+    },
+
+    setStatus(id, msg, mode) {
+        const cfg = this.statusMap[id];
+        if(!cfg) return;
+        const el = document.getElementById(cfg.el);
+        if(!el) return;
+        el.innerText = msg;
+        el.dataset.mode = mode || 'idle';
+    },
+
+    tickCooldowns() {
+        Object.keys(this.statusMap).forEach(id => {
+            const left = this.timeLeft(id);
+            const cfg = this.statusMap[id];
+            const el = document.getElementById(cfg.el);
+            if(!el) return;
+            const isBusy = (id === 'tap' && this.tapActive) || (id === 'math' && this.mathActive) || (id === 'reaction' && (this.reactionWaiting || this.reactionReady)) || (id === 'target' && this.targetActive) || (id === 'guess' && this.guessActive) || (id === 'challenge' && this.challengeActive) || (id === 'memory' && this.memoryActive) || (id === 'aim' && this.aimActive) || (id === 'typing' && this.typingActive);
+            if(isBusy) return;
+            if(left > 0) {
+                this.setStatus(id, `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+            } else if(el.dataset.mode === 'cooldown') {
+                this.setStatus(id, cfg.idle, 'idle');
+            }
+        });
+    },
+    registerWin() {
+        if(!this.challengeActive) return;
+        this.challengeProgress += 1;
+        const prog = document.getElementById('challenge-progress');
+        if(prog) prog.innerText = this.challengeProgress;
+        if(this.challengeProgress >= 2) {
+            this.finishChallenge(true);
+        } else {
+            this.setStatus('challenge', `Mantap. Tinggal ${2 - this.challengeProgress} menang lagi.`, 'active');
+        }
+    },
+    startChallenge() {
+        if(this.challengeActive) return;
+        const left = this.timeLeft('challenge');
+        if(left > 0) return this.setStatus('challenge', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        this.challengeActive = true;
+        this.challengeProgress = 0;
+        const prog = document.getElementById('challenge-progress');
+        if(prog) prog.innerText = '0';
+        const startBtn = document.getElementById('challenge-start');
+        if(startBtn) startBtn.disabled = true;
+        this.challengeDeadline = Date.now() + 60000;
+        this.setStatus('challenge', 'Mulai! Menang 2 game.', 'active');
+        if(this.challengeTimer) clearInterval(this.challengeTimer);
+        this.challengeTimer = setInterval(() => {
+            const leftMs = this.challengeDeadline - Date.now();
+            if(leftMs <= 0) {
+                this.finishChallenge(false);
+            } else {
+                const sec = Math.ceil(leftMs / 1000);
+                this.setStatus('challenge', `Sisa ${sec}s. Menang 2 game.`, 'active');
+            }
+        }, 1000);
+    },
+    finishChallenge(success) {
+        if(!this.challengeActive) return;
+        this.challengeActive = false;
+        if(this.challengeTimer) clearInterval(this.challengeTimer);
+        const startBtn = document.getElementById('challenge-start');
+        if(startBtn) startBtn.disabled = false;
+        if(success) {
+            App.xp(150);
+            this.setCooldown('challenge', this.cooldownConfig.challenge);
+            this.setStatus('challenge', 'Challenge selesai! +150 XP.', 'cooldown');
+            App.log('Challenge Room sukses (+150 XP)');
+            SFX.play('success');
+        } else {
+            this.setCooldown('challenge', 25);
+            this.setStatus('challenge', 'Gagal. Coba lagi.', 'cooldown');
+            App.log('Challenge Room gagal.');
+            SFX.play('error');
+        }
+    },
+    startTarget() {
+        if(this.targetActive) return;
+        const left = this.timeLeft('target');
+        if(left > 0) return this.setStatus('target', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        this.targetActive = true;
+        this.targetHits = 0;
+        const hits = document.getElementById('target-hits');
+        if(hits) hits.innerText = '0';
+        const dot = document.getElementById('target-dot');
+        if(dot) dot.classList.remove('hidden');
+        this.moveTarget();
+        this.setStatus('target', '8 detik. Gas!', 'active');
+        if(this.targetTimer) clearInterval(this.targetTimer);
+        if(this.targetTimeout) clearTimeout(this.targetTimeout);
+        this.targetTimeout = setTimeout(() => this.endTarget(), 8000);
+    },
+    moveTarget() {
+        const area = document.getElementById('target-area');
+        const dot = document.getElementById('target-dot');
+        if(!area || !dot) return;
+        const maxX = area.clientWidth - 40;
+        const maxY = area.clientHeight - 40;
+        const x = Math.max(4, Math.random() * maxX);
+        const y = Math.max(4, Math.random() * maxY);
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+    },
+    hitTarget() {
+        if(!this.targetActive) return;
+        this.targetHits += 1;
+        const hits = document.getElementById('target-hits');
+        if(hits) hits.innerText = this.targetHits;
+        this.moveTarget();
+        if(!this.targetTimer) {
+            this.targetTimer = setInterval(() => this.moveTarget(), 400);
+        }
+    },
+    endTarget() {
+        if(!this.targetActive) return;
+        this.targetActive = false;
+        if(this.targetTimer) { clearInterval(this.targetTimer); this.targetTimer = null; }
+        if(this.targetTimeout) { clearTimeout(this.targetTimeout); this.targetTimeout = null; }
+        const dot = document.getElementById('target-dot');
+        if(dot) dot.classList.add('hidden');
+        let gain = 0;
+        if(this.targetHits >= 12) gain = 70;
+        else if(this.targetHits >= 8) gain = 50;
+        else if(this.targetHits >= 5) gain = 25;
+        if(gain > 0) {
+            App.xp(gain);
+            this.registerWin();
+            App.log(`Target Rush ${this.targetHits} hit (+${gain} XP)`);
+            SFX.play('success');
+            this.setStatus('target', `Hit ${this.targetHits}. +${gain} XP.`, 'cooldown');
+        } else {
+            App.log(`Target Rush gagal (${this.targetHits} hit)`);
+            SFX.play('error');
+            this.setStatus('target', `Hit ${this.targetHits}. Gagal.`, 'cooldown');
+        }
+        this.setCooldown('target', this.cooldownConfig.target);
+    },
+    guessStart() {
+        if(this.guessActive) return;
+        const left = this.timeLeft('guess');
+        if(left > 0) return this.setStatus('guess', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        this.guessActive = true;
+        this.guessTries = 3;
+        this.guessNumber = Math.floor(Math.random() * 20) + 1;
+        this.setStatus('guess', 'Mulai. 3x tebak.', 'active');
+    },
+    guessSubmit() {
+        if(!this.guessActive) return;
+        const input = document.getElementById('guess-input');
+        const val = parseInt(input.value, 10);
+        if(input) input.value = '';
+        if(Number.isNaN(val)) return;
+        this.guessTries -= 1;
+        if(val === this.guessNumber) {
+            this.guessActive = false;
+            App.xp(40);
+            this.registerWin();
+            App.log('Guess Number benar (+40 XP)');
+            this.setCooldown('guess', this.cooldownConfig.guess);
+            this.setStatus('guess', 'Benar! +40 XP.', 'cooldown');
+            SFX.play('success');
+            return;
+        }
+        if(this.guessTries <= 0) {
+            this.guessActive = false;
+            this.setCooldown('guess', 8);
+            this.setStatus('guess', `Salah. Angkanya ${this.guessNumber}.`, 'cooldown');
+            App.log('Guess Number gagal.');
+            SFX.play('error');
+            return;
+        }
+        const hint = val > this.guessNumber ? 'Terlalu besar.' : 'Terlalu kecil.';
+        this.setStatus('guess', `${hint} Sisa ${this.guessTries}x.`, 'active');
+    },
+    startMemory() {
+        if(this.memoryActive) return;
+        const left = this.timeLeft('memory');
+        if(left > 0) return this.setStatus('memory', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        this.memoryActive = true;
+        this.memoryMatches = 0;
+        this.memoryFlipped = [];
+        const matchEl = document.getElementById('memory-match');
+        if(matchEl) matchEl.innerText = '0';
+        const symbols = ["★","❤","✦","☠","◆","✿"];
+        const deck = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+        this.memoryCards = deck.map((s, idx) => ({ id: idx, symbol: s, matched: false, flipped: false }));
+        this.renderMemoryGrid();
+        this.setStatus('memory', 'Mulai! 25 detik.', 'active');
+        if(this.memoryTimer) clearTimeout(this.memoryTimer);
+        this.memoryTimer = setTimeout(() => this.endMemory(false), 25000);
+    },
+    renderMemoryGrid() {
+        const grid = document.getElementById('memory-grid');
+        if(!grid) return;
+        grid.innerHTML = '';
+        this.memoryCards.forEach(card => {
+            const btn = document.createElement('button');
+            btn.className = `memory-card ${card.flipped ? 'flipped' : ''} ${card.matched ? 'matched' : ''}`;
+            btn.innerText = card.flipped || card.matched ? card.symbol : '•';
+            btn.onclick = () => this.flipMemory(card.id);
+            grid.appendChild(btn);
+        });
+    },
+    flipMemory(id) {
+        if(!this.memoryActive) return;
+        const card = this.memoryCards.find(c => c.id === id);
+        if(!card || card.flipped || card.matched) return;
+        if(this.memoryFlipped.length >= 2) return;
+        card.flipped = true;
+        this.memoryFlipped.push(card);
+        this.renderMemoryGrid();
+        if(this.memoryFlipped.length === 2) {
+            const [a, b] = this.memoryFlipped;
+            if(a.symbol === b.symbol) {
+                a.matched = true; b.matched = true;
+                this.memoryFlipped = [];
+                this.memoryMatches += 1;
+                const matchEl = document.getElementById('memory-match');
+                if(matchEl) matchEl.innerText = this.memoryMatches;
+                if(this.memoryMatches >= 6) this.endMemory(true);
+            } else {
+                setTimeout(() => {
+                    a.flipped = false; b.flipped = false;
+                    this.memoryFlipped = [];
+                    this.renderMemoryGrid();
+                }, 500);
+            }
+        }
+    },
+    endMemory(success) {
+        if(!this.memoryActive) return;
+        this.memoryActive = false;
+        if(this.memoryTimer) { clearTimeout(this.memoryTimer); this.memoryTimer = null; }
+        let gain = 0;
+        if(success) gain = 80;
+        else if(this.memoryMatches >= 4) gain = 40;
+        else if(this.memoryMatches >= 2) gain = 20;
+        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Memory Flip ${this.memoryMatches} match (+${gain} XP)`); SFX.play('success'); }
+        else { App.log(`Memory Flip gagal (${this.memoryMatches} match)`); SFX.play('error'); }
+        this.setStatus('memory', success ? `Selesai +${gain} XP.` : `Match ${this.memoryMatches}.`, 'cooldown');
+        this.setCooldown('memory', this.cooldownConfig.memory);
+        this.renderMemoryGrid();
+    },
+    startAim() {
+        if(this.aimActive) return;
+        const left = this.timeLeft('aim');
+        if(left > 0) return this.setStatus('aim', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        this.aimActive = true;
+        this.aimHits = 0;
+        this.aimCount = 0;
+        const hitEl = document.getElementById('aim-hit');
+        if(hitEl) hitEl.innerText = '0';
+        const dot = document.getElementById('aim-dot');
+        if(dot) dot.classList.remove('hidden');
+        this.moveAim();
+        this.setStatus('aim', '10 target. Gas.', 'active');
+    },
+    moveAim() {
+        const area = document.getElementById('aim-area');
+        const dot = document.getElementById('aim-dot');
+        if(!area || !dot) return;
+        const maxX = area.clientWidth - 30;
+        const maxY = area.clientHeight - 30;
+        dot.style.left = `${Math.max(4, Math.random() * maxX)}px`;
+        dot.style.top = `${Math.max(4, Math.random() * maxY)}px`;
+        if(this.aimTimer) clearTimeout(this.aimTimer);
+        this.aimTimer = setTimeout(() => this.missAim(), 600);
+    },
+    hitAim() {
+        if(!this.aimActive) return;
+        this.aimHits += 1;
+        this.aimCount += 1;
+        const hitEl = document.getElementById('aim-hit');
+        if(hitEl) hitEl.innerText = this.aimHits;
+        if(this.aimCount >= 10) return this.endAim();
+        this.moveAim();
+    },
+    missAim() {
+        if(!this.aimActive) return;
+        this.aimCount += 1;
+        if(this.aimCount >= 10) return this.endAim();
+        this.moveAim();
+    },
+    endAim() {
+        if(!this.aimActive) return;
+        this.aimActive = false;
+        if(this.aimTimer) { clearTimeout(this.aimTimer); this.aimTimer = null; }
+        const dot = document.getElementById('aim-dot');
+        if(dot) dot.classList.add('hidden');
+        let gain = 0;
+        if(this.aimHits >= 8) gain = 75;
+        else if(this.aimHits >= 5) gain = 45;
+        else if(this.aimHits >= 3) gain = 20;
+        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Quick Aim ${this.aimHits}/10 (+${gain} XP)`); SFX.play('success'); }
+        else { App.log(`Quick Aim gagal (${this.aimHits}/10)`); SFX.play('error'); }
+        this.setStatus('aim', `Hit ${this.aimHits}/10.`, 'cooldown');
+        this.setCooldown('aim', this.cooldownConfig.aim);
+    },
+    startTyping() {
+        if(this.typingActive) return;
+        const left = this.timeLeft('typing');
+        if(left > 0) return this.setStatus('typing', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        this.typingActive = true;
+        this.typingCount = 0;
+        const countEl = document.getElementById('typing-count');
+        if(countEl) countEl.innerText = '0';
+        this.typingDeadline = Date.now() + 20000;
+        this.nextTypingWord();
+        this.setStatus('typing', '20 detik. 5 kata.', 'active');
+        if(this.typingTimer) clearInterval(this.typingTimer);
+        this.typingTimer = setInterval(() => {
+            if(Date.now() >= this.typingDeadline) this.endTyping(false);
+        }, 500);
+    },
+    nextTypingWord() {
+        const word = this.typingWords[Math.floor(Math.random() * this.typingWords.length)];
+        const el = document.getElementById('typing-word');
+        if(el) el.innerText = word;
+    },
+    typingSubmit() {
+        if(!this.typingActive) return;
+        const input = document.getElementById('typing-input');
+        const val = input.value.trim().toLowerCase();
+        input.value = '';
+        const current = document.getElementById('typing-word').innerText.trim().toLowerCase();
+        if(val === current) {
+            this.typingCount += 1;
+            const countEl = document.getElementById('typing-count');
+            if(countEl) countEl.innerText = this.typingCount;
+            if(this.typingCount >= 5) return this.endTyping(true);
+            this.nextTypingWord();
+        } else {
+            this.setStatus('typing', 'Salah. Fokus.', 'active');
+        }
+    },
+    endTyping(success) {
+        if(!this.typingActive) return;
+        this.typingActive = false;
+        if(this.typingTimer) { clearInterval(this.typingTimer); this.typingTimer = null; }
+        let gain = 0;
+        if(success) gain = 60;
+        else if(this.typingCount >= 3) gain = 30;
+        else if(this.typingCount >= 1) gain = 10;
+        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Typing Rush ${this.typingCount}/5 (+${gain} XP)`); SFX.play('success'); }
+        else { App.log(`Typing Rush gagal (${this.typingCount}/5)`); SFX.play('error'); }
+        this.setStatus('typing', `Selesai ${this.typingCount}/5.`, 'cooldown');
+        this.setCooldown('typing', this.cooldownConfig.typing);
+    },
+    clearCooldowns() {
+        Object.keys(App.db.data.games.cooldowns).forEach(k => {
+            App.db.data.games.cooldowns[k] = 0;
+        });
+        App.db.save();
+        this.tickCooldowns();
+    },
+
+    startTap() {
+        if(this.tapActive) return;
+        const left = this.timeLeft('tap');
+        if(left > 0) return this.setStatus('tap', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        const tapBtn = document.getElementById('tap-btn');
+        const tapStart = document.getElementById('tap-start');
+        if(tapBtn) tapBtn.disabled = false;
+        if(tapStart) tapStart.disabled = true;
+        this.tapActive = true;
+        this.tapCount = 0;
+        this.tapStartTime = Date.now();
+        document.getElementById('tap-count').innerText = '0';
+        document.getElementById('tap-timer').innerText = '3.0s';
+        this.setStatus('tap', 'Gas! 3 detik mulai.', 'active');
+        if(this.tapTimer) clearInterval(this.tapTimer);
+        let timeLeft = 3000;
+        this.tapTimer = setInterval(() => {
+            timeLeft -= 100;
+            const sec = Math.max(0, timeLeft / 1000);
+            document.getElementById('tap-timer').innerText = `${sec.toFixed(1)}s`;
+            if(timeLeft <= 0) this.endTap(false);
+        }, 100);
+    },
+
+    tap() {
+        if(!this.tapActive) return;
+        this.tapCount += 1;
+        document.getElementById('tap-count').innerText = this.tapCount;
+        if(this.tapCount >= 10) this.endTap(true);
+    },
+
+    endTap(success) {
+        if(!this.tapActive) return;
+        this.tapActive = false;
+        if(this.tapTimer) clearInterval(this.tapTimer);
+        const tapBtn = document.getElementById('tap-btn');
+        const tapStart = document.getElementById('tap-start');
+        if(tapBtn) tapBtn.disabled = true;
+        if(tapStart) tapStart.disabled = false;
+        if(success) {
+            const timeSpent = (Date.now() - this.tapStartTime) / 1000;
+            const best = App.db.data.games.best.tapTime;
+            if(best === 0 || timeSpent < best) {
+                App.db.data.games.best.tapTime = parseFloat(timeSpent.toFixed(1));
+                App.db.save();
+                this.updateBest();
+            }
+            App.xp(30);
+            this.setCooldown('tap', this.cooldownConfig.tap);
+            this.setStatus('tap', `Menang +30 XP. Cooldown ${this.formatCooldown(this.cooldownConfig.tap)}`, 'cooldown');
+            App.log(`Tap Rage menang (+30 XP, ${timeSpent.toFixed(1)}s)`);
+            this.registerWin();
+            SFX.play('success');
+        } else {
+            this.setCooldown('tap', 10);
+            this.setStatus('tap', 'Gagal. Jari kamu lemah.', 'cooldown');
+            App.log('Tap Rage gagal.');
+            SFX.play('error');
+        }
+    },
+
+    newMath() {
+        if(this.mathActive) return;
+        const left = this.timeLeft('math');
+        if(left > 0) return this.setStatus('math', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        const a = Math.floor(Math.random() * 20) + 2;
+        const b = Math.floor(Math.random() * 20) + 2;
+        this.mathAnswer = a + b;
+        this.mathActive = true;
+        this.mathTimeLeft = 8;
+        document.getElementById('math-question').innerText = `${a} + ${b}`;
+        this.setStatus('math', 'Timer 8s. Kerja!', 'active');
+        if(this.mathTimer) clearInterval(this.mathTimer);
+        this.mathTimer = setInterval(() => {
+            this.mathTimeLeft -= 1;
+            if(this.mathTimeLeft <= 0) {
+                clearInterval(this.mathTimer);
+                this.mathActive = false;
+                App.db.data.games.streaks.math = 0;
+                App.db.save();
+                this.setCooldown('math', this.cooldownConfig.math);
+                this.setStatus('math', 'Waktu habis. Fokus woy.', 'cooldown');
+            } else {
+                this.setStatus('math', `Sisa ${this.mathTimeLeft}s`, 'active');
+            }
+        }, 1000);
+    },
+
+    submitMath() {
+        if(!this.mathActive) return;
+        const input = document.getElementById('math-answer');
+        const val = parseInt(input.value, 10);
+        if(input) input.value = '';
+        clearInterval(this.mathTimer);
+        this.mathActive = false;
+        if(val === this.mathAnswer) {
+            App.db.data.games.streaks.math += 1;
+            const streak = App.db.data.games.streaks.math;
+            const bonus = Math.min(20, (streak - 1) * 5);
+            const gain = 40 + bonus;
+            App.db.save();
+            App.xp(gain);
+            this.setCooldown('math', this.cooldownConfig.math);
+            this.setStatus('math', `Benar +${gain} XP (streak ${streak})`, 'cooldown');
+            App.log(`Math Burst benar (+${gain} XP, streak ${streak})`);
+            this.registerWin();
+            SFX.play('success');
+        } else {
+            App.db.data.games.streaks.math = 0;
+            App.db.save();
+            this.setCooldown('math', 8);
+            this.setStatus('math', 'Salah. Otak ngelag.', 'cooldown');
+            App.log('Math Burst salah.');
+            SFX.play('error');
+        }
+        document.getElementById('math-question').innerText = '--';
+    },
+
+    rps(choice) {
+        const left = this.timeLeft('rps');
+        if(left > 0) return this.setStatus('rps', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        const options = ['rock', 'paper', 'scissors'];
+        const enemy = options[Math.floor(Math.random() * options.length)];
+        const label = { rock: 'batu', paper: 'kertas', scissors: 'gunting' };
+        let result = 'kalah';
+        if(choice === enemy) result = 'seri';
+        else if(
+            (choice === 'rock' && enemy === 'scissors') ||
+            (choice === 'paper' && enemy === 'rock') ||
+            (choice === 'scissors' && enemy === 'paper')
+        ) result = 'menang';
+        let msg = `Kamu ${label[choice]} vs ${label[enemy]}. `;
+        if(result === 'menang') { App.xp(25); msg += 'Menang +25 XP.'; this.registerWin(); SFX.play('success'); }
+        if(result === 'seri') { App.xp(5); msg += 'Seri +5 XP.'; }
+        if(result === 'kalah') { msg += 'Kalah. Coba lagi.'; SFX.play('error'); }
+        this.setCooldown('rps', this.cooldownConfig.rps);
+        this.setStatus('rps', msg, 'cooldown');
+        App.log(`Suit: ${label[choice]} vs ${label[enemy]} (${result})`);
+    },
+
+    startReaction() {
+        if(this.reactionWaiting || this.reactionReady) return;
+        const left = this.timeLeft('reaction');
+        if(left > 0) return this.setStatus('reaction', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        const startBtn = document.getElementById('react-start');
+        const reactBtn = document.getElementById('react-btn');
+        if(startBtn) startBtn.disabled = true;
+        if(reactBtn) { reactBtn.disabled = true; reactBtn.classList.remove('ready'); reactBtn.innerText = 'TUNGGU...'; }
+        this.reactionWaiting = true;
+        this.setStatus('reaction', 'Tunggu hijau. Jangan curang.', 'active');
+        const delay = 1200 + Math.random() * 2200;
+        if(this.reactionTimer) clearTimeout(this.reactionTimer);
+        this.reactionTimer = setTimeout(() => {
+            this.reactionReady = true;
+            this.reactionWaiting = false;
+            this.reactionStart = Date.now();
+            if(reactBtn) { reactBtn.disabled = false; reactBtn.classList.add('ready'); reactBtn.innerText = 'SEKARANG!'; }
+        }, delay);
+    },
+
+    reactTap() {
+        const startBtn = document.getElementById('react-start');
+        const reactBtn = document.getElementById('react-btn');
+        if(this.reactionWaiting && !this.reactionReady) {
+            clearTimeout(this.reactionTimer);
+            this.reactionWaiting = false;
+            if(startBtn) startBtn.disabled = false;
+            if(reactBtn) { reactBtn.disabled = true; reactBtn.classList.remove('ready'); reactBtn.innerText = 'TUNGGU...'; }
+            this.setCooldown('reaction', 8);
+            App.log('Reflex Panic gagal (keburu).');
+            return this.setStatus('reaction', 'Keburu. Santai dikit.', 'cooldown');
+        }
+        if(!this.reactionReady) return;
+        this.reactionReady = false;
+        const delta = Date.now() - this.reactionStart;
+        let gain = 10;
+        if(delta < 220) gain = 60;
+        else if(delta < 320) gain = 45;
+        else if(delta < 450) gain = 30;
+        else if(delta < 650) gain = 20;
+        App.xp(gain);
+        if(startBtn) startBtn.disabled = false;
+        if(reactBtn) { reactBtn.disabled = true; reactBtn.classList.remove('ready'); reactBtn.innerText = 'TUNGGU...'; }
+        const best = App.db.data.games.best.reactionTime;
+        if(best === 0 || delta < best) {
+            App.db.data.games.best.reactionTime = delta;
+            App.db.save();
+            this.updateBest();
+        }
+        this.setCooldown('reaction', this.cooldownConfig.reaction);
+        this.setStatus('reaction', `Reaksi ${delta}ms. +${gain} XP.`, 'cooldown');
+        App.log(`Reflex Panic ${delta}ms (+${gain} XP)`);
+        this.registerWin();
+        SFX.play('success');
+    },
+
+    spinLucky() {
+        const left = this.timeLeft('lucky');
+        if(left > 0) return this.setStatus('lucky', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
+        const roll = Math.random();
+        let xp = 0;
+        if(roll < 0.5) xp = Math.floor(Math.random() * 21);
+        else if(roll < 0.9) xp = 21 + Math.floor(Math.random() * 40);
+        else xp = 61 + Math.floor(Math.random() * 60);
+        if(xp > 0) { App.xp(xp); this.setStatus('lucky', `Dapat ${xp} XP.`, 'cooldown'); App.log(`Lucky Button +${xp} XP`); SFX.play('success'); }
+        else { this.setStatus('lucky', 'Zonk. Nasib.', 'cooldown'); App.log('Lucky Button zonk.'); SFX.play('error'); }
+        this.setCooldown('lucky', this.cooldownConfig.lucky);
+    }
+};
+
 class DB {
     constructor() {
         this.key = 'SarcasticOS_Platinum_V6_PWA';
@@ -868,7 +1565,13 @@ class DB {
             },
             tasks: [], inventory: ['theme-default', 'wall-none', 'cursor-default'],
             pet: { active: false, name: 'Si Beban', hunger: 100, health: 100, feedCount: 0, lastUpdate: Date.now() },
-            achievements: []
+            achievements: [],
+            logs: [],
+            games: {
+                cooldowns: { tap: 0, math: 0, rps: 0, reaction: 0, lucky: 0, target: 0, guess: 0, challenge: 0, memory: 0, aim: 0, typing: 0 },
+                streaks: { math: 0 },
+                best: { tapTime: 0, reactionTime: 0 }
+            }
         };
         this.load();
     }
@@ -876,10 +1579,23 @@ class DB {
         const d = localStorage.getItem(this.key);
         if(d) {
             const parsed = JSON.parse(d);
-            this.data = {...this.data, ...parsed, user:{...this.data.user, ...parsed.user}, pet:{...this.data.pet, ...parsed.pet}};
+            this.data = {...this.data, ...parsed, user:{...this.data.user, ...parsed.user}, pet:{...this.data.pet, ...parsed.pet}, games:{...this.data.games, ...parsed.games}};
             ['theme-default', 'wall-none', 'cursor-default'].forEach(x => { if(!this.data.inventory.includes(x)) this.data.inventory.push(x); });
             // Migration for skin
             if(!this.data.user.skin) this.data.user.skin = 'default';
+            // Migration for logs
+            if(!this.data.logs) this.data.logs = [];
+            // Migration for games
+            if(!this.data.games) {
+                this.data.games = {
+                    cooldowns: { tap: 0, math: 0, rps: 0, reaction: 0, lucky: 0, target: 0, guess: 0, challenge: 0, memory: 0, aim: 0, typing: 0 },
+                    streaks: { math: 0 },
+                    best: { tapTime: 0, reactionTime: 0 }
+                };
+            }
+            if(!this.data.games.cooldowns) this.data.games.cooldowns = { tap: 0, math: 0, rps: 0, reaction: 0, lucky: 0, target: 0, guess: 0, challenge: 0, memory: 0, aim: 0, typing: 0 };
+            if(!this.data.games.streaks) this.data.games.streaks = { math: 0 };
+            if(!this.data.games.best) this.data.games.best = { tapTime: 0, reactionTime: 0 };
         }
     }
     save() { try{localStorage.setItem(this.key, JSON.stringify(this.data))}catch(e){alert('Storage Full')} }
@@ -917,7 +1633,7 @@ const Pet = {
     },
     buyEgg() {
         if(App.db.data.user.xp >= 500) {
-            App.xp(-500); App.db.data.pet.active = true; App.db.data.pet.lastUpdate = Date.now(); App.db.save(); App.notify("Waifu didapatkan!", "success"); SFX.play('buy'); this.init();
+            App.xp(-500); App.db.data.pet.active = true; App.db.data.pet.lastUpdate = Date.now(); App.db.save(); App.notify("Waifu didapatkan!", "success"); App.log("Beli pet baru (-500 XP)"); SFX.play('buy'); this.init();
         } else { App.notify("XP kurang.", "error"); }
     },
     tick() {
@@ -997,14 +1713,14 @@ const App = {
     // Variabel untuk Swipe Gesture
     touchStartX: 0,
     touchEndX: 0,
-    menuOrder: ['home', 'apps', 'pet', 'shop', 'profile'], // Urutan menu untuk swipe
+    menuOrder: ['home', 'apps', 'games', 'pet', 'shop', 'profile'], // Urutan menu untuk swipe
 
     init() {
         lucide.createIcons(); this.render(); this.applyAppearance(); this.quote(); this.renderSounds(); this.renderAchievements();
         document.getElementById('task-input').addEventListener('keypress',e=>{if(e.key==='Enter')this.addTask()});
         document.getElementById('chat-input').addEventListener('keypress',e=>{if(e.key==='Enter')Chat.send()});
         
-        Achievements.check('login'); this.checkDailyLogin(); Radio.init(); Pet.init(); Notif.init(); Weather.init(); Chat.startIdle();
+        Achievements.check('login'); this.checkDailyLogin(); Radio.init(); Pet.init(); Notif.init(); Weather.init(); Chat.startIdle(); Games.init();
         
         // Setup Swipe Listener
         this.initSwipeGestures();
@@ -1032,7 +1748,7 @@ const App = {
         
         // Cek halaman aktif sekarang
         let currentId = 'home';
-        ['home', 'apps', 'pet', 'shop', 'profile'].forEach(id => {
+        ['home', 'apps', 'games', 'pet', 'shop', 'profile'].forEach(id => {
             if(!document.getElementById(`view-${id}`).classList.contains('hidden')) currentId = id;
         });
 
@@ -1057,7 +1773,7 @@ const App = {
         SFX.play('click'); SFX.vib();
         
         // 1. Hide All Views
-        ['home','apps','shop','profile','pet'].forEach(v=>{ 
+        ['home','apps','games','shop','profile','pet'].forEach(v=>{ 
             const el = document.getElementById(`view-${v}`);
             const btn = document.getElementById(`nav-${v}`);
             if(el) el.classList.add('hidden'); 
@@ -1078,6 +1794,7 @@ const App = {
         if(id === 'shop') this.renderShop(); 
         if(id === 'profile') this.renderProfile(); 
         if(id === 'pet') Pet.render();
+        if(id === 'games') Games.init();
         
         window.scrollTo({top:0, behavior:'smooth'}); 
         lucide.createIcons();
@@ -1142,14 +1859,15 @@ const App = {
         const i=document.getElementById('task-input'); const t=i.value.trim();
         if(!t) return this.notify("Tulis dulu woy!",'error');
         SFX.play('click'); this.db.data.tasks.unshift({id:Date.now(), txt:t, done:false});
+        this.log(`Tambah tugas: "${t}"`);
         this.db.save(); i.value=''; this.render(); this.notify("Beban bertambah.",'ok');
     },
     toggle(id) {
         const t = this.db.data.tasks.find(x=>x.id===id);
-        if(t){ t.done=!t.done; SFX.vib(); if(t.done){ SFX.play('success'); this.xp(50); this.db.data.user.stats.done++; confetti({origin:{y:0.8},spread:60}); } else { this.xp(-20); this.db.data.user.stats.done--; } this.db.save(); this.render(); }
+        if(t){ t.done=!t.done; SFX.vib(); if(t.done){ SFX.play('success'); this.xp(50); this.db.data.user.stats.done++; confetti({origin:{y:0.8},spread:60}); this.log(`Selesai tugas: "${t.txt}" (+50 XP)`); } else { this.xp(-20); this.db.data.user.stats.done--; this.log(`Batalkan selesai: "${t.txt}" (-20 XP)`); } this.db.save(); this.render(); }
     },
     del(id) {
-        if(confirm('Hapus dosa ini?')){ this.db.data.tasks=this.db.data.tasks.filter(x=>x.id!==id); this.xp(-10); this.db.data.user.stats.del++; Achievements.check('delete'); this.db.save(); this.render(); }
+        if(confirm('Hapus dosa ini?')){ const t = this.db.data.tasks.find(x=>x.id===id); this.db.data.tasks=this.db.data.tasks.filter(x=>x.id!==id); this.xp(-10); this.db.data.user.stats.del++; Achievements.check('delete'); if(t) this.log(`Hapus tugas: "${t.txt}" (-10 XP)`); this.db.save(); this.render(); }
     },
     xp(n) {
         const u = this.db.data.user;
@@ -1196,17 +1914,20 @@ const App = {
             icon.classList.remove('shake-anim');
             if(hasTicket) { this.db.data.user.tickets--; this.notify("Pakai Tiket!", 'success'); } else { this.xp(-cost); }
             const rng = Math.random() * 100;
-            if(rng < 5) { this.xp(1000); confetti({particleCount: 150, spread: 70}); this.notify("JACKPOT! 1000 XP!", 'success'); } 
+            if(rng < 5) { this.xp(1000); confetti({particleCount: 150, spread: 70}); this.notify("JACKPOT! 1000 XP!", 'success'); this.log("Gacha jackpot! +1000 XP"); } 
             else if (rng < 15) { 
                 const item = CONFIG.GACHA_ITEMS[Math.floor(Math.random() * CONFIG.GACHA_ITEMS.length)];
-                if(this.db.data.inventory.includes(item.id)) { this.xp(50); this.notify("Barang kembar. +50 XP.", 'error'); } 
-                else { this.db.data.inventory.push(item.id); this.notify(`Dapat: ${item.name}!`, 'success'); SFX.play('success'); }
-            } else { this.notify("ZONK!", 'error'); SFX.play('error'); }
+                if(this.db.data.inventory.includes(item.id)) { this.xp(50); this.notify("Barang kembar. +50 XP.", 'error'); this.log(`Gacha dupe: ${item.name} (+50 XP)`); } 
+                else { this.db.data.inventory.push(item.id); this.notify(`Dapat: ${item.name}!`, 'success'); SFX.play('success'); this.log(`Gacha dapat: ${item.name}`); }
+            } else { this.notify("ZONK!", 'error'); SFX.play('error'); this.log("Gacha zonk."); }
             this.db.save(); this.renderShop();
         }, 500);
     },
     buy(id, cost, type) {
         if(this.db.data.inventory.includes(id)) {
+            if(type === 'item') {
+                return this.useItem(id);
+            }
             if(type === 'theme' || type === 'wallpaper' || type === 'cursor' || type === 'skin') {
                 if(type==='theme') this.db.data.user.theme = id.replace('theme-','');
                 if(type==='wallpaper') this.db.data.user.wallpaper = id;
@@ -1226,8 +1947,54 @@ const App = {
             if(type==='wallpaper') { this.db.data.user.wallpaper = id; this.applyAppearance(); }
             if(type==='cursor') { this.db.data.user.cursor = id; this.applyAppearance(); }
             if(type==='skin') { this.db.data.user.skin = id; Pet.render(); }
-            this.notify("Terbeli!", 'success'); this.db.save(); this.renderShop();
+            this.notify("Terbeli!", 'success'); this.log(`Beli ${id} (${cost} XP)`); this.db.save(); this.renderShop();
         } else { SFX.play('error'); this.notify("XP Miskin.", 'error'); }
+    },
+    useItem(id) {
+        const item = CONFIG.SHOP_ITEMS.find(x=>x.id===id);
+        if(!item) return;
+        const u = this.db.data.user;
+        const p = this.db.data.pet;
+        let used = false;
+        let msg = "Dipakai.";
+        if(item.effect === 'ticket') {
+            u.tickets += item.value || 1;
+            used = true;
+            msg = `Dapat ${item.value || 1} tiket.`;
+        } else if(item.effect === 'loan') {
+            if(u.loan <= 0) return this.notify("Utang kosong.", 'error');
+            const cut = Math.min(u.loan, item.value || 0);
+            u.loan -= cut;
+            used = true;
+            msg = `Utang berkurang ${cut} XP.`;
+        } else if(item.effect === 'feed') {
+            if(!p.active) return this.notify("Pet belum aktif.", 'error');
+            const h = item.value?.hunger || 0;
+            const hp = item.value?.health || 0;
+            p.hunger = Math.min(100, p.hunger + h);
+            p.health = Math.min(100, p.health + hp);
+            p.feedCount += 1;
+            used = true;
+            msg = "Pet kenyang.";
+            SFX.play('eat');
+            Pet.render();
+            Achievements.check('feed');
+        } else if(item.effect === 'cooldown') {
+            Games.clearCooldowns();
+            used = true;
+            msg = "Cooldown game direset.";
+        } else if(item.effect === 'xp') {
+            this.xp(item.value || 0);
+            used = true;
+            msg = `+${item.value || 0} XP.`;
+        }
+        if(!used) return;
+        this.db.data.inventory = this.db.data.inventory.filter(x=>x!==id);
+        this.db.save();
+        this.renderShop();
+        this.renderProfile();
+        this.log(`Pakai item: ${item.name}`);
+        this.notify(msg, 'success');
     },
     render() {
         const u = this.db.data.user;
@@ -1261,10 +2028,12 @@ const App = {
         
         // --- FIX SLIDER POSITION ON RENDER ---
         let currentId = 'home';
-        ['home', 'apps', 'pet', 'shop', 'profile'].forEach(id => {
+        ['home', 'apps', 'games', 'pet', 'shop', 'profile'].forEach(id => {
             if(!document.getElementById(`view-${id}`).classList.contains('hidden')) currentId = id;
         });
         this.moveSlider(currentId);
+        Games.updateXp();
+        Games.updateBest();
     },
     renderSounds() {
         const el = document.getElementById('sound-list'); el.innerHTML = '';
@@ -1297,8 +2066,15 @@ const App = {
                 if(type==='cursor') active = this.db.data.user.cursor === item.id;
                 if(type==='skin') active = this.db.data.user.skin === item.id;
                 let btnText = `Beli ${item.cost}`;
-                if (owned) { if (type === 'skin' && active) btnText = "LEPAS"; else if (active) btnText = "Aktif"; else btnText = "Pasang"; }
-                let btnClass = owned ? (active ? (type === 'skin' ? 'bg-red-500/80 text-white hover:bg-red-600' : 'bg-white/10 text-slate-300 cursor-default') : 'bg-white text-black hover:bg-slate-200') : 'bg-accent text-white shadow-lg';
+                if (owned) {
+                    if (type === 'item') btnText = "PAKAI";
+                    else if (type === 'skin' && active) btnText = "LEPAS";
+                    else if (active) btnText = "Aktif";
+                    else btnText = "Pasang";
+                }
+                let btnClass = owned 
+                    ? (type === 'item' ? 'bg-white text-black hover:bg-slate-200' : (active ? (type === 'skin' ? 'bg-red-500/80 text-white hover:bg-red-600' : 'bg-white/10 text-slate-300 cursor-default') : 'bg-white text-black hover:bg-slate-200'))
+                    : 'bg-accent text-white shadow-lg';
                 const el = document.createElement('div');
                 el.className = `glass-panel rounded-2xl p-4 flex flex-col justify-between relative overflow-hidden ${active?'border-accent':''}`;
                 el.innerHTML = `<div class="mb-3">${item.color ? `<div class="w-full h-8 rounded-lg mb-2" style="background:${item.color}"></div>` : ''}${item.icon ? `<i data-lucide="${item.icon}" class="w-5 h-5 text-accent mb-2"></i>` : ''}<h4 class="font-bold text-sm text-white">${item.name}</h4><p class="text-[10px] text-slate-400 leading-tight">${item.desc}</p></div><button onclick="App.buy('${item.id}', ${item.cost}, '${type}')" class="w-full py-2 rounded-xl text-[10px] font-bold uppercase ${btnClass}">${btnText}</button>`;
@@ -1327,6 +2103,32 @@ const App = {
             invList.appendChild(el);
         });
         this.renderAchievements(); lucide.createIcons();
+        this.renderLogs();
+    },
+    renderLogs() {
+        const el = document.getElementById('sarpent-log');
+        if(!el) return;
+        el.innerHTML = '';
+        const logs = this.db.data.logs || [];
+        if(logs.length === 0) {
+            el.innerHTML = `<div class="p-4 text-[10px] text-slate-500">Belum ada sejarah dosa. Bagus? Atau kosong doang.</div>`;
+            return;
+        }
+        logs.slice(0, 20).forEach(item => {
+            const row = document.createElement('div');
+            row.className = "p-3 flex items-start gap-3";
+            const time = new Date(item.t);
+            const timeStr = `${time.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' })} • ${time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+            row.innerHTML = `<div class="w-2 h-2 rounded-full bg-accent mt-1.5"></div><div class="flex-1"><div class="text-[10px] text-slate-400 mb-0.5">${timeStr}</div><div class="text-xs font-bold text-white">${item.msg}</div></div>`;
+            el.appendChild(row);
+        });
+    },
+    log(msg) {
+        if(!msg) return;
+        const logs = this.db.data.logs || [];
+        logs.unshift({ t: Date.now(), msg });
+        this.db.data.logs = logs.slice(0, 50);
+        this.db.save();
     },
     renderAchievements() {
         const el = document.getElementById('achievements-list'); if(!el) return; el.innerHTML = '';
