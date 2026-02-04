@@ -341,6 +341,8 @@ const SFX = {
     eat: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3'], volume:0.5}),
     fire: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/1330/1330-preview.mp3'], volume:0.5}),
     msg: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'], volume:0.4}),
+    hit: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3'], volume:0.35}),
+    winBig: new Howl({src:['https://assets.mixkit.co/active_storage/sfx/1430/1430-preview.mp3'], volume:0.45}),
     play(t){try{this[t].play()}catch(e){}},
     vib(){if(navigator.vibrate)navigator.vibrate(10)}
 };
@@ -888,7 +890,7 @@ const Games = {
     reactionTimer: null,
     reactionStart: 0,
     cooldownTick: null,
-    cooldownConfig: { tap: 20, math: 12, rps: 5, reaction: 20, lucky: 30, target: 20, guess: 12, challenge: 60, memory: 25, aim: 20, typing: 18 },
+    cooldownConfig: { tap: 18, math: 12, rps: 7, reaction: 18, lucky: 35, target: 18, guess: 12, challenge: 75, memory: 22, aim: 18, typing: 16 },
     statusMap: {
         tap: { el: 'tap-status', idle: 'Siap? Pencet mulai.' },
         math: { el: 'math-status', idle: 'Males? Tekan mulai.' },
@@ -944,6 +946,15 @@ const Games = {
         }
         if(this.cooldownTick) clearInterval(this.cooldownTick);
         this.cooldownTick = setInterval(() => this.tickCooldowns(), 500);
+    },
+    flash(cardId, type) {
+        const el = document.getElementById(cardId);
+        if(!el) return;
+        const cls = type === 'win' ? 'game-win' : 'game-lose';
+        el.classList.remove('game-win', 'game-lose');
+        void el.offsetWidth;
+        el.classList.add(cls);
+        setTimeout(() => el.classList.remove(cls), 450);
     },
 
     ensureData() {
@@ -1049,15 +1060,18 @@ const Games = {
         const startBtn = document.getElementById('challenge-start');
         if(startBtn) startBtn.disabled = false;
         if(success) {
-            App.xp(150);
+            App.xp(140);
             this.setCooldown('challenge', this.cooldownConfig.challenge);
-            this.setStatus('challenge', 'Challenge selesai! +150 XP.', 'cooldown');
-            App.log('Challenge Room sukses (+150 XP)');
-            SFX.play('success');
+            this.setStatus('challenge', 'Challenge selesai! +140 XP.', 'cooldown');
+            App.log('Challenge Room sukses (+140 XP)');
+            confetti({particleCount: 120, spread: 70, origin:{y:0.7}});
+            this.flash('game-challenge-card', 'win');
+            SFX.play('winBig');
         } else {
             this.setCooldown('challenge', 25);
             this.setStatus('challenge', 'Gagal. Coba lagi.', 'cooldown');
             App.log('Challenge Room gagal.');
+            this.flash('game-challenge-card', 'lose');
             SFX.play('error');
         }
     },
@@ -1093,6 +1107,7 @@ const Games = {
         this.targetHits += 1;
         const hits = document.getElementById('target-hits');
         if(hits) hits.innerText = this.targetHits;
+        SFX.play('hit');
         this.moveTarget();
         if(!this.targetTimer) {
             this.targetTimer = setInterval(() => this.moveTarget(), 400);
@@ -1106,19 +1121,22 @@ const Games = {
         const dot = document.getElementById('target-dot');
         if(dot) dot.classList.add('hidden');
         let gain = 0;
-        if(this.targetHits >= 12) gain = 70;
-        else if(this.targetHits >= 8) gain = 50;
-        else if(this.targetHits >= 5) gain = 25;
+        if(this.targetHits >= 12) gain = 60;
+        else if(this.targetHits >= 8) gain = 45;
+        else if(this.targetHits >= 5) gain = 22;
         if(gain > 0) {
             App.xp(gain);
             this.registerWin();
             App.log(`Target Rush ${this.targetHits} hit (+${gain} XP)`);
             SFX.play('success');
             this.setStatus('target', `Hit ${this.targetHits}. +${gain} XP.`, 'cooldown');
+            if(gain >= 45) { confetti({particleCount: 50, spread: 50, origin:{y:0.8}}); SFX.play('winBig'); }
+            this.flash('game-target-card', 'win');
         } else {
             App.log(`Target Rush gagal (${this.targetHits} hit)`);
             SFX.play('error');
             this.setStatus('target', `Hit ${this.targetHits}. Gagal.`, 'cooldown');
+            this.flash('game-target-card', 'lose');
         }
         this.setCooldown('target', this.cooldownConfig.target);
     },
@@ -1140,11 +1158,12 @@ const Games = {
         this.guessTries -= 1;
         if(val === this.guessNumber) {
             this.guessActive = false;
-            App.xp(40);
+            App.xp(35);
             this.registerWin();
-            App.log('Guess Number benar (+40 XP)');
+            App.log('Guess Number benar (+35 XP)');
             this.setCooldown('guess', this.cooldownConfig.guess);
-            this.setStatus('guess', 'Benar! +40 XP.', 'cooldown');
+            this.setStatus('guess', 'Benar! +35 XP.', 'cooldown');
+            this.flash('game-guess-card', 'win');
             SFX.play('success');
             return;
         }
@@ -1153,6 +1172,7 @@ const Games = {
             this.setCooldown('guess', 8);
             this.setStatus('guess', `Salah. Angkanya ${this.guessNumber}.`, 'cooldown');
             App.log('Guess Number gagal.');
+            this.flash('game-guess-card', 'lose');
             SFX.play('error');
             return;
         }
@@ -1219,11 +1239,11 @@ const Games = {
         this.memoryActive = false;
         if(this.memoryTimer) { clearTimeout(this.memoryTimer); this.memoryTimer = null; }
         let gain = 0;
-        if(success) gain = 80;
-        else if(this.memoryMatches >= 4) gain = 40;
-        else if(this.memoryMatches >= 2) gain = 20;
-        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Memory Flip ${this.memoryMatches} match (+${gain} XP)`); SFX.play('success'); }
-        else { App.log(`Memory Flip gagal (${this.memoryMatches} match)`); SFX.play('error'); }
+        if(success) gain = 70;
+        else if(this.memoryMatches >= 4) gain = 35;
+        else if(this.memoryMatches >= 2) gain = 18;
+        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Memory Flip ${this.memoryMatches} match (+${gain} XP)`); this.flash('game-memory-card', 'win'); SFX.play('success'); }
+        else { App.log(`Memory Flip gagal (${this.memoryMatches} match)`); this.flash('game-memory-card', 'lose'); SFX.play('error'); }
         this.setStatus('memory', success ? `Selesai +${gain} XP.` : `Match ${this.memoryMatches}.`, 'cooldown');
         this.setCooldown('memory', this.cooldownConfig.memory);
         this.renderMemoryGrid();
@@ -1259,6 +1279,7 @@ const Games = {
         this.aimCount += 1;
         const hitEl = document.getElementById('aim-hit');
         if(hitEl) hitEl.innerText = this.aimHits;
+        SFX.play('hit');
         if(this.aimCount >= 10) return this.endAim();
         this.moveAim();
     },
@@ -1275,11 +1296,11 @@ const Games = {
         const dot = document.getElementById('aim-dot');
         if(dot) dot.classList.add('hidden');
         let gain = 0;
-        if(this.aimHits >= 8) gain = 75;
-        else if(this.aimHits >= 5) gain = 45;
-        else if(this.aimHits >= 3) gain = 20;
-        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Quick Aim ${this.aimHits}/10 (+${gain} XP)`); SFX.play('success'); }
-        else { App.log(`Quick Aim gagal (${this.aimHits}/10)`); SFX.play('error'); }
+        if(this.aimHits >= 8) gain = 65;
+        else if(this.aimHits >= 5) gain = 40;
+        else if(this.aimHits >= 3) gain = 18;
+        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Quick Aim ${this.aimHits}/10 (+${gain} XP)`); this.flash('game-aim-card', 'win'); if(gain >= 40) SFX.play('winBig'); SFX.play('success'); }
+        else { App.log(`Quick Aim gagal (${this.aimHits}/10)`); this.flash('game-aim-card', 'lose'); SFX.play('error'); }
         this.setStatus('aim', `Hit ${this.aimHits}/10.`, 'cooldown');
         this.setCooldown('aim', this.cooldownConfig.aim);
     },
@@ -1316,6 +1337,9 @@ const Games = {
             if(countEl) countEl.innerText = this.typingCount;
             if(this.typingCount >= 5) return this.endTyping(true);
             this.nextTypingWord();
+            input.classList.remove('typing-glow');
+            void input.offsetWidth;
+            input.classList.add('typing-glow');
         } else {
             this.setStatus('typing', 'Salah. Fokus.', 'active');
         }
@@ -1325,11 +1349,11 @@ const Games = {
         this.typingActive = false;
         if(this.typingTimer) { clearInterval(this.typingTimer); this.typingTimer = null; }
         let gain = 0;
-        if(success) gain = 60;
-        else if(this.typingCount >= 3) gain = 30;
-        else if(this.typingCount >= 1) gain = 10;
-        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Typing Rush ${this.typingCount}/5 (+${gain} XP)`); SFX.play('success'); }
-        else { App.log(`Typing Rush gagal (${this.typingCount}/5)`); SFX.play('error'); }
+        if(success) gain = 50;
+        else if(this.typingCount >= 3) gain = 25;
+        else if(this.typingCount >= 1) gain = 8;
+        if(gain > 0) { App.xp(gain); this.registerWin(); App.log(`Typing Rush ${this.typingCount}/5 (+${gain} XP)`); this.flash('game-typing-card', 'win'); SFX.play('success'); }
+        else { App.log(`Typing Rush gagal (${this.typingCount}/5)`); this.flash('game-typing-card', 'lose'); SFX.play('error'); }
         this.setStatus('typing', `Selesai ${this.typingCount}/5.`, 'cooldown');
         this.setCooldown('typing', this.cooldownConfig.typing);
     },
@@ -1388,16 +1412,18 @@ const Games = {
                 App.db.save();
                 this.updateBest();
             }
-            App.xp(30);
+            App.xp(25);
             this.setCooldown('tap', this.cooldownConfig.tap);
-            this.setStatus('tap', `Menang +30 XP. Cooldown ${this.formatCooldown(this.cooldownConfig.tap)}`, 'cooldown');
-            App.log(`Tap Rage menang (+30 XP, ${timeSpent.toFixed(1)}s)`);
+            this.setStatus('tap', `Menang +25 XP. Cooldown ${this.formatCooldown(this.cooldownConfig.tap)}`, 'cooldown');
+            App.log(`Tap Rage menang (+25 XP, ${timeSpent.toFixed(1)}s)`);
             this.registerWin();
+            this.flash('game-tap-card', 'win');
             SFX.play('success');
         } else {
-            this.setCooldown('tap', 10);
+            this.setCooldown('tap', 12);
             this.setStatus('tap', 'Gagal. Jari kamu lemah.', 'cooldown');
             App.log('Tap Rage gagal.');
+            this.flash('game-tap-card', 'lose');
             SFX.play('error');
         }
     },
@@ -1440,13 +1466,15 @@ const Games = {
             App.db.data.games.streaks.math += 1;
             const streak = App.db.data.games.streaks.math;
             const bonus = Math.min(20, (streak - 1) * 5);
-            const gain = 40 + bonus;
+            const gain = 35 + bonus;
             App.db.save();
             App.xp(gain);
             this.setCooldown('math', this.cooldownConfig.math);
             this.setStatus('math', `Benar +${gain} XP (streak ${streak})`, 'cooldown');
             App.log(`Math Burst benar (+${gain} XP, streak ${streak})`);
             this.registerWin();
+            if(gain >= 55) confetti({particleCount: 80, spread: 60, origin:{y:0.8}});
+            this.flash('game-math-card', 'win');
             SFX.play('success');
         } else {
             App.db.data.games.streaks.math = 0;
@@ -1454,6 +1482,7 @@ const Games = {
             this.setCooldown('math', 8);
             this.setStatus('math', 'Salah. Otak ngelag.', 'cooldown');
             App.log('Math Burst salah.');
+            this.flash('game-math-card', 'lose');
             SFX.play('error');
         }
         document.getElementById('math-question').innerText = '--';
@@ -1473,9 +1502,9 @@ const Games = {
             (choice === 'scissors' && enemy === 'paper')
         ) result = 'menang';
         let msg = `Kamu ${label[choice]} vs ${label[enemy]}. `;
-        if(result === 'menang') { App.xp(25); msg += 'Menang +25 XP.'; this.registerWin(); SFX.play('success'); }
-        if(result === 'seri') { App.xp(5); msg += 'Seri +5 XP.'; }
-        if(result === 'kalah') { msg += 'Kalah. Coba lagi.'; SFX.play('error'); }
+        if(result === 'menang') { App.xp(20); msg += 'Menang +20 XP.'; this.registerWin(); this.flash('game-rps-card', 'win'); SFX.play('success'); }
+        if(result === 'seri') { App.xp(3); msg += 'Seri +3 XP.'; }
+        if(result === 'kalah') { msg += 'Kalah. Coba lagi.'; this.flash('game-rps-card', 'lose'); SFX.play('error'); }
         this.setCooldown('rps', this.cooldownConfig.rps);
         this.setStatus('rps', msg, 'cooldown');
         App.log(`Suit: ${label[choice]} vs ${label[enemy]} (${result})`);
@@ -1511,16 +1540,17 @@ const Games = {
             if(reactBtn) { reactBtn.disabled = true; reactBtn.classList.remove('ready'); reactBtn.innerText = 'TUNGGU...'; }
             this.setCooldown('reaction', 8);
             App.log('Reflex Panic gagal (keburu).');
+            this.flash('game-react-card', 'lose');
             return this.setStatus('reaction', 'Keburu. Santai dikit.', 'cooldown');
         }
         if(!this.reactionReady) return;
         this.reactionReady = false;
         const delta = Date.now() - this.reactionStart;
         let gain = 10;
-        if(delta < 220) gain = 60;
-        else if(delta < 320) gain = 45;
-        else if(delta < 450) gain = 30;
-        else if(delta < 650) gain = 20;
+        if(delta < 220) gain = 50;
+        else if(delta < 320) gain = 40;
+        else if(delta < 450) gain = 28;
+        else if(delta < 650) gain = 18;
         App.xp(gain);
         if(startBtn) startBtn.disabled = false;
         if(reactBtn) { reactBtn.disabled = true; reactBtn.classList.remove('ready'); reactBtn.innerText = 'TUNGGU...'; }
@@ -1534,6 +1564,8 @@ const Games = {
         this.setStatus('reaction', `Reaksi ${delta}ms. +${gain} XP.`, 'cooldown');
         App.log(`Reflex Panic ${delta}ms (+${gain} XP)`);
         this.registerWin();
+        if(gain >= 40) { confetti({particleCount: 60, spread: 55, origin:{y:0.8}}); SFX.play('winBig'); }
+        this.flash('game-react-card', 'win');
         SFX.play('success');
     },
 
@@ -1542,11 +1574,11 @@ const Games = {
         if(left > 0) return this.setStatus('lucky', `Cooldown ${this.formatCooldown(left)}`, 'cooldown');
         const roll = Math.random();
         let xp = 0;
-        if(roll < 0.5) xp = Math.floor(Math.random() * 21);
-        else if(roll < 0.9) xp = 21 + Math.floor(Math.random() * 40);
-        else xp = 61 + Math.floor(Math.random() * 60);
-        if(xp > 0) { App.xp(xp); this.setStatus('lucky', `Dapat ${xp} XP.`, 'cooldown'); App.log(`Lucky Button +${xp} XP`); SFX.play('success'); }
-        else { this.setStatus('lucky', 'Zonk. Nasib.', 'cooldown'); App.log('Lucky Button zonk.'); SFX.play('error'); }
+        if(roll < 0.5) xp = Math.floor(Math.random() * 16);
+        else if(roll < 0.9) xp = 16 + Math.floor(Math.random() * 30);
+        else xp = 46 + Math.floor(Math.random() * 40);
+        if(xp > 0) { App.xp(xp); this.setStatus('lucky', `Dapat ${xp} XP.`, 'cooldown'); App.log(`Lucky Button +${xp} XP`); if(xp >= 60) confetti({particleCount: 90, spread: 60, origin:{y:0.8}}); this.flash('game-lucky-card', 'win'); SFX.play('success'); }
+        else { this.setStatus('lucky', 'Zonk. Nasib.', 'cooldown'); App.log('Lucky Button zonk.'); this.flash('game-lucky-card', 'lose'); SFX.play('error'); }
         this.setCooldown('lucky', this.cooldownConfig.lucky);
     }
 };
