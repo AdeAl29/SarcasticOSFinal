@@ -4,6 +4,17 @@ const CONFIG = {
         avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Felix",
         cover: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop"
     },
+    ONLINE: {
+        enabled: true,
+        provider: 'firebase',
+        firebase: {
+            apiKey: 'AIzaSyBzVK5eqahJRhu24-Ym8-hguoDKuozKVrc',
+            authDomain: 'sarcasticos-2aaa6.firebaseapp.com',
+            databaseURL: 'https://sarcasticos-2aaa6-default-rtdb.asia-southeast1.firebasedatabase.app/',
+            projectId: 'sarcasticos-2aaa6',
+            appId: '1:371675367958:web:b1c123167572476e3cc337'
+        }
+    },
     SOUNDS: [
         {id:'none', name:'Hening', icon:'mic-off', src:''},
         {id:'rain', name:'Hujan', icon:'cloud-rain', src:'https://assets.mixkit.co/active_storage/sfx/1235/1235-preview.mp3'},
@@ -1599,6 +1610,7 @@ class DB {
             pet: { active: false, name: 'Si Beban', hunger: 100, health: 100, feedCount: 0, lastUpdate: Date.now() },
             achievements: [],
             logs: [],
+            friends: [],
             games: {
                 cooldowns: { tap: 0, math: 0, rps: 0, reaction: 0, lucky: 0, target: 0, guess: 0, challenge: 0, memory: 0, aim: 0, typing: 0 },
                 streaks: { math: 0 },
@@ -1617,6 +1629,8 @@ class DB {
             if(!this.data.user.skin) this.data.user.skin = 'default';
             // Migration for logs
             if(!this.data.logs) this.data.logs = [];
+            // Migration for friends
+            if(!this.data.friends) this.data.friends = [];
             // Migration for games
             if(!this.data.games) {
                 this.data.games = {
@@ -1630,8 +1644,395 @@ class DB {
             if(!this.data.games.best) this.data.games.best = { tapTime: 0, reactionTime: 0 };
         }
     }
-    save() { try{localStorage.setItem(this.key, JSON.stringify(this.data))}catch(e){alert('Storage Full')} }
+    save() { 
+        try{localStorage.setItem(this.key, JSON.stringify(this.data))}catch(e){alert('Storage Full')}
+        if (typeof Online !== 'undefined' && typeof Online.queueSync === 'function') Online.queueSync();
+    }
 }
+
+const Online = {
+    status: 'OFFLINE',
+    hint: 'Isi config online dulu.',
+    ready: false,
+    uid: null,
+    code: '----',
+    app: null,
+    db: null,
+    auth: null,
+    cacheFriends: [],
+    cacheLeaderboard: [],
+    syncTimer: null,
+    isConfigured() {
+        const cfg = CONFIG.ONLINE && CONFIG.ONLINE.firebase;
+        return !!(CONFIG.ONLINE && CONFIG.ONLINE.enabled && cfg && cfg.apiKey && cfg.databaseURL);
+    },
+    init() {
+        this.render();
+        if(!this.isConfigured()) {
+            this.setStatus('OFFLINE', 'Isi config Firebase dulu.');
+            return;
+        }
+        this.connect();
+    },
+    setStatus(status, hint) {
+        this.status = status;
+        if(hint) this.hint = hint;
+        this.render();
+    },
+    connect() {
+        if(!this.isConfigured()) {
+            this.setStatus('OFFLINE', 'Isi config Firebase dulu.');
+            App.notify("Online belum diset.", "error");
+            return;
+        }
+        if(!window.firebase) {
+            this.setStatus('ERROR', 'Firebase SDK belum load.');
+            return;
+        }
+        this.setStatus('CONNECTING', 'Nyambung dulu...');
+        if(firebase.apps.length === 0) this.app = firebase.initializeApp(CONFIG.ONLINE.firebase);
+        else this.app = firebase.app();
+        this.auth = firebase.auth();
+        this.db = firebase.database();
+        this.auth.onAuthStateChanged(user => {
+            if(!user) return;
+            this.uid = user.uid;
+            this.code = this.makeCode(user.uid);
+            this.ready = true;
+            this.setStatus('ONLINE', 'Terhubung.');
+            this.ensureCode();
+            this.syncNow();
+            this.loadFriends();
+            this.refreshLeaderboard();
+            this.render();
+        });
+        if(!this.auth.currentUser) {
+            this.auth.signInAnonymously().catch(err => {
+            console.error('Online auth error:', err);
+            const msg = (err && err.code === 'auth/operation-not-allowed')
+                ? 'Aktifkan Anonymous di Firebase Auth.'
+                : 'Auth gagal.';
+            this.setStatus('ERROR', msg);
+            });
+        }
+    },
+    authLabel() {
+        if(!this.auth || !this.auth.currentUser) return 'Anon';
+        const u = this.auth.currentUser;
+        if(u.isAnonymous) return 'Anon';
+        const provider = (u.providerData && u.providerData[0] && u.providerData[0].providerId) || '';
+        if(provider === 'google.com') return 'Google';
+        if(provider === 'password') return 'Email';
+        return 'User';
+    },
+    signInGoogle() {
+        if(!this.auth) return App.notify("Belum online.", "error");
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const user = this.auth.currentUser;
+        if(user && user.isAnonymous) {
+            user.linkWithPopup(provider).then(() => {
+                App.notify("Akun tersambung Google.", "success");
+                this.syncNow();
+            }).catch(err => {
+                console.error('Google link error:', err);
+                App.notify("Gagal sambung Google.", "error");
+            });
+        } else {
+            this.auth.signInWithPopup(provider).then(() => {
+                App.notify("Login Google.", "success");
+                this.syncNow();
+            }).catch(err => {
+                console.error('Google sign-in error:', err);
+                App.notify("Login Google gagal.", "error");
+            });
+        }
+    },
+    signInEmail() {
+        this.openAuth('login');
+    },
+    signOut() {
+        if(!this.auth) return;
+        this.auth.signOut().then(() => {
+            this.ready = false;
+            this.uid = null;
+            this.code = '----';
+            this.setStatus('OFFLINE', 'Logout.');
+            App.notify("Logout.", "success");
+        });
+    },
+    openAuth(tab = 'login') {
+        const modal = document.getElementById('auth-modal');
+        if(!modal) return;
+        this.switchAuthTab(tab);
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+        lucide.createIcons();
+    },
+    closeAuth() {
+        const modal = document.getElementById('auth-modal');
+        if(!modal) return;
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+    },
+    switchAuthTab(tab) {
+        const tabs = ['login','signup','reset'];
+        tabs.forEach(t => {
+            const tabEl = document.getElementById(`auth-tab-${t}`);
+            const panelEl = document.getElementById(`auth-panel-${t}`);
+            if(tabEl) tabEl.classList.toggle('active', t === tab);
+            if(panelEl) panelEl.classList.toggle('active', t === tab);
+        });
+        const status = document.getElementById('auth-status-line');
+        if(status) status.innerText = `Status: ${tab.toUpperCase()}`;
+    },
+    setAuthStatus(msg, ok = true) {
+        const status = document.getElementById('auth-status-line');
+        if(!status) return;
+        status.innerText = `Status: ${msg}`;
+        status.style.color = ok ? '#a7f3d0' : '#fca5a5';
+        status.style.background = ok ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)';
+        status.style.borderColor = ok ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)';
+    },
+    setAuthBusy(isBusy) {
+        const modal = document.getElementById('auth-modal');
+        if(!modal) return;
+        const card = modal.querySelector('.auth-card');
+        if(card) card.classList.toggle('auth-loading', !!isBusy);
+    },
+    formatAuthError(err) {
+        const code = err && err.code ? err.code : '';
+        switch(code) {
+            case 'auth/email-already-in-use': return 'Email sudah dipakai. Coba login.';
+            case 'auth/invalid-email': return 'Format email salah.';
+            case 'auth/weak-password': return 'Password terlalu lemah (min 6).';
+            case 'auth/user-not-found': return 'Akun tidak ditemukan.';
+            case 'auth/wrong-password': return 'Password salah.';
+            case 'auth/popup-closed-by-user': return 'Popup ditutup.';
+            case 'auth/operation-not-allowed': return 'Provider belum diaktifkan di Firebase.';
+            case 'auth/credential-already-in-use': return 'Kredensial sudah dipakai akun lain.';
+            case 'auth/account-exists-with-different-credential': return 'Email sudah terhubung provider lain.';
+            default: return 'Terjadi error. Coba lagi.';
+        }
+    },
+    submitAuth(mode) {
+        if(!this.auth) return App.notify("Belum online.", "error");
+        if(mode === 'login') {
+            const email = (document.getElementById('auth-email') || {}).value || '';
+            const password = (document.getElementById('auth-password') || {}).value || '';
+            if(!email || !password) return this.setAuthStatus('Email/Password kosong', false);
+            this.setAuthStatus('Login...', true);
+            this.setAuthBusy(true);
+            this.auth.signInWithEmailAndPassword(email, password).then(() => {
+                App.notify("Login Email.", "success");
+                this.syncNow();
+                this.closeAuth();
+            }).catch(err => {
+                console.error('Email login error:', err);
+                this.setAuthStatus(this.formatAuthError(err), false);
+            }).finally(() => this.setAuthBusy(false));
+            return;
+        }
+        if(mode === 'signup') {
+            const email = (document.getElementById('auth-email-signup') || {}).value || '';
+            const password = (document.getElementById('auth-password-signup') || {}).value || '';
+            if(!email || !password || password.length < 6) return this.setAuthStatus('Password min 6', false);
+            this.setAuthStatus('Daftar...', true);
+            this.setAuthBusy(true);
+            const user = this.auth.currentUser;
+            const cred = firebase.auth.EmailAuthProvider.credential(email, password);
+            const linkOrCreate = () => user.linkWithCredential(cred).then(() => {
+                App.notify("Akun tersambung Email.", "success");
+                this.syncNow();
+                this.closeAuth();
+            }).catch(err => {
+                if(err && err.code === 'auth/email-already-in-use') {
+                    this.auth.signInWithEmailAndPassword(email, password).then(() => {
+                        App.notify("Login Email.", "success");
+                        this.syncNow();
+                        this.closeAuth();
+                    }).catch(e2 => {
+                        console.error('Email login error:', e2);
+                        this.setAuthStatus(this.formatAuthError(e2), false);
+                    });
+                    return;
+                }
+                console.error('Email link error:', err);
+                this.setAuthStatus(this.formatAuthError(err), false);
+            });
+            if(user && user.isAnonymous) return linkOrCreate();
+            this.auth.createUserWithEmailAndPassword(email, password).then(() => {
+                App.notify("Akun Email dibuat.", "success");
+                this.syncNow();
+                this.closeAuth();
+            }).catch(err => {
+                console.error('Email signup error:', err);
+                this.setAuthStatus(this.formatAuthError(err), false);
+            }).finally(() => this.setAuthBusy(false));
+            return;
+        }
+        if(mode === 'reset') {
+            const email = (document.getElementById('auth-email-reset') || {}).value || '';
+            if(!email) return this.setAuthStatus('Email kosong', false);
+            this.setAuthStatus('Mengirim reset...', true);
+            this.setAuthBusy(true);
+            this.auth.sendPasswordResetEmail(email).then(() => {
+                this.setAuthStatus('Reset terkirim', true);
+                App.notify("Reset email terkirim.", "success");
+            }).catch(err => {
+                console.error('Reset error:', err);
+                this.setAuthStatus(this.formatAuthError(err), false);
+            }).finally(() => this.setAuthBusy(false));
+        }
+    },
+    makeCode(uid) {
+        return (uid || '').slice(-6).toUpperCase() || '----';
+    },
+    ensureCode() {
+        if(!this.ready || !this.db || !this.code) return;
+        this.db.ref(`codes/${this.code}`).set(this.uid);
+    },
+    profilePayload() {
+        const u = App.db.data.user;
+        return {
+            name: u.name || 'User',
+            avatar: u.avatar || CONFIG.DEFAULTS.avatar,
+            xp: u.xp || 0,
+            lvl: u.lvl || 1,
+            stats: u.stats || { done: 0, del: 0 },
+            code: this.code,
+            updatedAt: Date.now()
+        };
+    },
+    syncProfile() {
+        if(!this.ready || !this.db) return;
+        const payload = this.profilePayload();
+        this.db.ref(`users/${this.uid}`).update(payload);
+    },
+    syncLeaderboard() {
+        if(!this.ready || !this.db) return;
+        const payload = this.profilePayload();
+        this.db.ref(`leaderboards/xp/${this.uid}`).set(payload);
+    },
+    syncNow() {
+        if(!this.ready) {
+            App.notify("Belum online.", "error");
+            return;
+        }
+        this.syncProfile();
+        this.syncLeaderboard();
+        const el = document.getElementById('online-sync');
+        if(el) el.innerText = `Sync ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+    },
+    queueSync() {
+        if(!this.ready) return;
+        clearTimeout(this.syncTimer);
+        this.syncTimer = setTimeout(() => this.syncNow(), 1500);
+    },
+    copyCode() {
+        if(!this.code || this.code === '----') return App.notify("Belum ada kode.", "error");
+        if(navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(this.code).then(() => App.notify("Kode dicopy.", "success"));
+        } else {
+            prompt('Copy kode ini:', this.code);
+        }
+    },
+    addFriend() {
+        const input = document.getElementById('friend-code');
+        if(!input) return;
+        const code = input.value.trim().toUpperCase();
+        if(!code) return App.notify("Masukkan kode.", "error");
+        if(!this.ready || !this.db) return App.notify("Belum online.", "error");
+        this.db.ref(`codes/${code}`).once('value').then(snap => {
+            const uid = snap.val();
+            if(!uid) return App.notify("Kode tidak ditemukan.", "error");
+            if(uid === this.uid) return App.notify("Itu kode kamu sendiri.", "error");
+            if(!App.db.data.friends.includes(uid)) {
+                App.db.data.friends.push(uid);
+                App.db.save();
+            }
+            input.value = '';
+            this.loadFriends();
+            App.notify("Teman ditambah.", "success");
+        });
+    },
+    loadFriends() {
+        if(!this.ready || !this.db) return;
+        const ids = App.db.data.friends || [];
+        if(ids.length === 0) {
+            this.cacheFriends = [];
+            this.render();
+            return;
+        }
+        Promise.all(ids.map(id => this.db.ref(`users/${id}`).once('value')))
+            .then(snaps => {
+                this.cacheFriends = snaps.map(s => s.val()).filter(Boolean);
+                this.render();
+            });
+    },
+    refreshLeaderboard() {
+        if(!this.ready || !this.db) {
+            this.cacheLeaderboard = [];
+            this.render();
+            return;
+        }
+        this.db.ref('leaderboards/xp').orderByChild('xp').limitToLast(20).once('value').then(snap => {
+            const items = [];
+            snap.forEach(child => items.push(child.val()));
+            this.cacheLeaderboard = items.sort((a,b)=> (b.xp||0) - (a.xp||0));
+            this.render();
+        });
+    },
+    renderFriendsList() {
+        const el = document.getElementById('friends-list');
+        if(!el) return;
+        el.innerHTML = '';
+        if(!this.ready) {
+            el.innerHTML = `<div class="text-[10px] text-slate-500">Belum online.</div>`;
+            return;
+        }
+        if(this.cacheFriends.length === 0) {
+            el.innerHTML = `<div class="text-[10px] text-slate-500">Belum ada teman.</div>`;
+            return;
+        }
+        this.cacheFriends.forEach(f => {
+            const row = document.createElement('div');
+            row.className = 'glass-panel rounded-xl p-3 border border-white/5 flex items-center gap-3';
+            row.innerHTML = `<img src="${f.avatar || CONFIG.DEFAULTS.avatar}" class="w-8 h-8 rounded-full object-cover"><div class="flex-1"><div class="text-xs font-bold text-white">${f.name || 'Teman'}</div><div class="text-[10px] text-slate-400">XP ${f.xp || 0} • LV ${f.lvl || 1}</div></div><div class="text-[10px] text-slate-500">${f.code || ''}</div>`;
+            el.appendChild(row);
+        });
+    },
+    renderLeaderboardList() {
+        const el = document.getElementById('leaderboard-list');
+        if(!el) return;
+        el.innerHTML = '';
+        if(!this.ready) {
+            el.innerHTML = `<div class="text-[10px] text-slate-500">Belum online.</div>`;
+            return;
+        }
+        if(this.cacheLeaderboard.length === 0) {
+            el.innerHTML = `<div class="text-[10px] text-slate-500">Belum ada data.</div>`;
+            return;
+        }
+        this.cacheLeaderboard.forEach((p, i) => {
+            const row = document.createElement('div');
+            row.className = 'glass-panel rounded-xl p-3 border border-white/5 flex items-center gap-3';
+            row.innerHTML = `<div class="w-6 text-center text-[10px] font-bold ${i===0?'text-yellow-400':i===1?'text-slate-200':i===2?'text-amber-600':'text-slate-500'}">#${i+1}</div><img src="${p.avatar || CONFIG.DEFAULTS.avatar}" class="w-7 h-7 rounded-full object-cover"><div class="flex-1"><div class="text-xs font-bold text-white">${p.name || 'User'}</div><div class="text-[10px] text-slate-400">LV ${p.lvl || 1}</div></div><div class="text-xs font-bold text-white">${p.xp || 0} XP</div>`;
+            el.appendChild(row);
+        });
+    },
+    render() {
+        const statusEl = document.getElementById('online-status');
+        const hintEl = document.getElementById('online-hint');
+        const codeEl = document.getElementById('online-code');
+        const authEl = document.getElementById('auth-status');
+        if(statusEl) statusEl.innerText = this.status;
+        if(hintEl) hintEl.innerText = this.hint || '';
+        if(codeEl) codeEl.innerText = this.code || '----';
+        if(authEl) authEl.innerText = this.authLabel();
+        this.renderFriendsList();
+        this.renderLeaderboardList();
+    }
+};
 
 const Pet = {
     tempHappy: false,
@@ -1752,7 +2153,7 @@ const App = {
         document.getElementById('task-input').addEventListener('keypress',e=>{if(e.key==='Enter')this.addTask()});
         document.getElementById('chat-input').addEventListener('keypress',e=>{if(e.key==='Enter')Chat.send()});
         
-        Achievements.check('login'); this.checkDailyLogin(); Radio.init(); Pet.init(); Notif.init(); Weather.init(); Chat.startIdle(); Games.init();
+        Achievements.check('login'); this.checkDailyLogin(); Radio.init(); Pet.init(); Notif.init(); Weather.init(); Chat.startIdle(); Games.init(); Online.init();
         
         // Setup Swipe Listener
         this.initSwipeGestures();
@@ -2136,6 +2537,7 @@ const App = {
         });
         this.renderAchievements(); lucide.createIcons();
         this.renderLogs();
+        if (typeof Online !== 'undefined') Online.render();
     },
     renderLogs() {
         const el = document.getElementById('sarpent-log');

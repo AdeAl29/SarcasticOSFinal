@@ -15,6 +15,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
@@ -502,6 +505,64 @@
                 </div>
 
                 <div class="mt-8"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 border-b border-white/10 pb-2">🏆 Pencapaian</h3><div class="grid grid-cols-2 gap-3" id="achievements-list"></div></div>
+                <div class="mt-8">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Online</h3>
+                    <div class="glass-panel rounded-2xl p-4 border border-white/10">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Status</div>
+                                <div id="online-status" class="text-sm font-bold text-white">OFFLINE</div>
+                                <div id="online-hint" class="text-[10px] text-slate-500 mt-1">Isi config online dulu.</div>
+                            </div>
+                            <button id="btn-online-connect" onclick="Online.connect()" class="px-4 py-2 rounded-xl bg-accent text-white text-[10px] font-bold shadow-lg">CONNECT</button>
+                        </div>
+                        <div class="mt-4 flex flex-wrap items-center gap-2">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold mr-2">Auth</div>
+                            <div id="auth-status" class="text-[10px] text-slate-300">Anon</div>
+                            <button onclick="Online.openAuth('login')" class="px-3 py-1.5 rounded-lg bg-white text-black text-[10px] font-bold">Login</button>
+                            <button onclick="Online.openAuth('signup')" class="px-3 py-1.5 rounded-lg bg-white text-black text-[10px] font-bold">Daftar</button>
+                            <button onclick="Online.signOut()" class="px-3 py-1.5 rounded-lg bg-white/10 text-slate-200 text-[10px] font-bold">Logout</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mt-4">
+                            <div class="glass-panel rounded-xl p-3 border border-white/10">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Kode Teman</div>
+                                <div id="online-code" class="text-lg font-black text-white font-mono mt-1">----</div>
+                                <button onclick="Online.copyCode()" class="text-[10px] text-slate-300 underline mt-1">Copy</button>
+                            </div>
+                            <div class="glass-panel rounded-xl p-3 border border-white/10">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Sync</div>
+                                <div id="online-sync" class="text-[10px] text-slate-300 mt-1">Belum sync</div>
+                                <button onclick="Online.syncNow()" class="text-[10px] text-slate-300 underline mt-1">Sync Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Teman</h3>
+                    <div class="glass-panel rounded-2xl p-4 border border-white/10">
+                        <div class="flex gap-2 mb-3">
+                            <input id="friend-code" type="text" placeholder="Kode teman" class="flex-1 bg-black/30 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-accent">
+                            <button onclick="Online.addFriend()" class="px-4 py-2 rounded-xl bg-white text-black text-[10px] font-bold">Tambah</button>
+                        </div>
+                        <div id="friends-list" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Leaderboard</h3>
+                    <div class="glass-panel rounded-2xl p-4 border border-white/10">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="trophy" class="w-4 h-4 text-yellow-400"></i>
+                                <div class="text-xs font-bold text-white">Top XP</div>
+                            </div>
+                            <button onclick="Online.refreshLeaderboard()" class="text-[10px] text-slate-300 underline">Refresh</button>
+                        </div>
+                        <div id="leaderboard-list" class="space-y-2"></div>
+                    </div>
+                </div>
+
                 <div class="mt-8"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Koleksi</h3><div class="flex gap-3 overflow-x-auto hide-scroll pb-2" id="inventory-list"></div></div>
 
                 <div class="mt-8">
@@ -565,6 +626,62 @@
         <div class="glass-panel w-[90%] max-w-sm rounded-[2rem] p-6 text-center border border-accent/30 modal-enter relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-b from-accent/20 to-transparent pointer-events-none"></div>
             <div class="relative z-10"><i data-lucide="calendar-check" class="w-12 h-12 text-accent mx-auto mb-4"></i><h2 class="text-2xl font-bold text-white mb-1">Login Harian</h2><p class="text-xs text-slate-400 mb-6">Konsisten itu kunci.</p><div class="grid grid-cols-4 gap-2 mb-6" id="daily-grid"></div><div id="daily-msg" class="text-sm font-bold text-white mb-6 bg-white/5 p-3 rounded-xl border border-white/10"></div><button onclick="App.claimDaily()" class="w-full py-3.5 rounded-xl bg-accent text-white font-bold shadow-lg shadow-accent/25 hover:scale-[1.02] active:scale-95 transition">KLAIM HADIAH</button></div>
+        </div>
+    </div>
+
+    <div id="auth-modal" class="fixed inset-0 z-[210] flex items-center justify-center bg-black/85 backdrop-blur hidden opacity-0 transition-opacity duration-300">
+        <div class="auth-card glass-panel w-[92%] max-w-md rounded-[2.2rem] p-6 border border-white/10 relative overflow-hidden">
+            <div class="auth-orb auth-orb-a"></div>
+            <div class="auth-orb auth-orb-b"></div>
+            <div class="absolute right-4 top-4">
+                <button onclick="Online.closeAuth()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-accent flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 uppercase tracking-widest">Online Access</div>
+                        <div class="text-xl font-black text-white">Login Keren</div>
+                    </div>
+                </div>
+
+                <div class="auth-tabs">
+                    <button id="auth-tab-login" onclick="Online.switchAuthTab('login')" class="auth-tab active">Login</button>
+                    <button id="auth-tab-signup" onclick="Online.switchAuthTab('signup')" class="auth-tab">Daftar</button>
+                    <button id="auth-tab-reset" onclick="Online.switchAuthTab('reset')" class="auth-tab">Reset</button>
+                </div>
+
+                <div class="auth-body">
+                    <div class="auth-panel active" id="auth-panel-login">
+                        <label class="auth-label">Email</label>
+                        <input id="auth-email" type="email" class="auth-input" placeholder="email@kamu.com">
+                        <label class="auth-label">Password</label>
+                        <input id="auth-password" type="password" class="auth-input" placeholder="Minimal 6 karakter">
+                        <button onclick="Online.submitAuth('login')" class="auth-primary">Login Email</button>
+                        <div class="auth-divider"><span>atau</span></div>
+                        <button onclick="Online.signInGoogle()" class="auth-secondary">
+                            <i data-lucide="chrome" class="w-4 h-4"></i> Login Google
+                        </button>
+                    </div>
+                    <div class="auth-panel" id="auth-panel-signup">
+                        <label class="auth-label">Email</label>
+                        <input id="auth-email-signup" type="email" class="auth-input" placeholder="email@kamu.com">
+                        <label class="auth-label">Password</label>
+                        <input id="auth-password-signup" type="password" class="auth-input" placeholder="Minimal 6 karakter">
+                        <button onclick="Online.submitAuth('signup')" class="auth-primary">Daftar</button>
+                        <div class="auth-note">Akun anonymous kamu akan disambung ke email ini.</div>
+                    </div>
+                    <div class="auth-panel" id="auth-panel-reset">
+                        <label class="auth-label">Email</label>
+                        <input id="auth-email-reset" type="email" class="auth-input" placeholder="email@kamu.com">
+                        <button onclick="Online.submitAuth('reset')" class="auth-primary">Kirim Reset</button>
+                        <div class="auth-note">Cek inbox kamu, jangan inbox mantan.</div>
+                    </div>
+                </div>
+                <div id="auth-status-line" class="auth-status">Status: Idle</div>
+            </div>
         </div>
     </div>
 

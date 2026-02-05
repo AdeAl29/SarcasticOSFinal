@@ -265,6 +265,186 @@ button { cursor: inherit; }
     font-weight: 800; 
 }
 
+/* --- AUTH MODAL --- */
+.auth-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+    background: radial-gradient(circle at top left, rgba(99,102,241,0.18), transparent 45%),
+                radial-gradient(circle at bottom right, rgba(14,165,233,0.16), transparent 50%),
+                rgba(3,7,18,0.85);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.45);
+    animation: authPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.auth-orb {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(20px);
+    opacity: 0.7;
+    animation: orbFloat 6s ease-in-out infinite;
+}
+.auth-orb-a {
+    width: 120px;
+    height: 120px;
+    background: rgba(99,102,241,0.55);
+    top: -30px;
+    left: -20px;
+}
+.auth-orb-b {
+    width: 160px;
+    height: 160px;
+    background: rgba(34,197,94,0.45);
+    bottom: -40px;
+    right: -30px;
+    animation-delay: 1.5s;
+}
+.auth-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 6px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+.auth-tab {
+    padding: 10px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+    transition: all 0.2s ease;
+}
+.auth-tab.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(99,102,241,0.3);
+}
+.auth-body {
+    position: relative;
+    min-height: 220px;
+}
+.auth-panel {
+    display: none;
+    animation: authSlide 0.25s ease;
+}
+.auth-panel.active {
+    display: block;
+}
+.auth-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 8px 0 6px;
+}
+.auth-input {
+    width: 100%;
+    border-radius: 14px;
+    padding: 12px 14px;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+.auth-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+}
+.auth-primary {
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary), #22c55e);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none;
+    box-shadow: 0 14px 28px rgba(34,197,94,0.25);
+    transition: transform 0.15s ease;
+}
+.auth-primary:active { transform: scale(0.98); }
+.auth-secondary {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+.auth-secondary:active { transform: scale(0.98); }
+.auth-divider {
+    margin: 14px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #64748b;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+}
+.auth-note {
+    margin-top: 10px;
+    font-size: 10px;
+    color: #94a3b8;
+}
+.auth-status {
+    margin-top: 12px;
+    font-size: 10px;
+    color: #a7f3d0;
+    background: rgba(16,185,129,0.12);
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(16,185,129,0.2);
+}
+.auth-loading {
+    opacity: 0.7;
+    pointer-events: none;
+    filter: saturate(0.8);
+}
+
+@keyframes authPop {
+    from { transform: translateY(10px) scale(0.96); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes authSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes orbFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(12px); }
+}
+
 /* --- MINI GAMES --- */
 .game-card {
     position: relative;
